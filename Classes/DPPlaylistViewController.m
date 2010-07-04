@@ -7,7 +7,7 @@
 #import "DPPlaylistViewController.h"
 
 #import "DPSettingsViewController.h"
-
+#import "UILabel+SetTextAnimated.h"
 
 @interface DPPlaylistViewController ()
 @property (nonatomic, retain) UIPopoverController* popover;
@@ -110,11 +110,11 @@
 	if (![mpclient isConnected])
 	{
 		// not connected
-		[currentTitle setText: @"Not Connected"];
-		[currentAlbum setText: @""];
-		[currentArtist setText: @""];
-		[nextSongLabel setText: @""];
-		[nextSong setText: @""];
+		[currentTitle setText: @"Not Connected" animated: YES];
+		[currentAlbum setText: @"" animated: YES];
+		[currentArtist setText: @"" animated: YES];
+		[nextSongLabel setText: @"" animated: YES];
+		[nextSong setText: @"" animated: YES];
 		return;
 	}
 	
@@ -122,25 +122,25 @@
 	if (!info || !([mpclient isPlaying] || [mpclient isPaused]))
 	{
 		// no playing song
-		[currentTitle setText: @"Not Playing"];
-		[currentAlbum setText: @""];
-		[currentArtist setText: @""];
-		[nextSongLabel setText: @""];
-		[nextSong setText: @""];
+		[currentTitle setText: @"Not Playing" animated: YES];
+		[currentAlbum setText: @"" animated: YES];
+		[currentArtist setText: @"" animated: YES];
+		[nextSongLabel setText: @"" animated: YES];
+		[nextSong setText: @"" animated: YES];
 	} else {
-		[currentTitle setText: [info objectForKey: @"title"]];
-		[currentAlbum setText: [info objectForKey: @"album"]];
-		[currentArtist setText: [info objectForKey: @"artist"]];
+		[currentTitle setText: [info objectForKey: @"title"] animated: YES];
+		[currentAlbum setText: [info objectForKey: @"album"] animated: YES];
+		[currentArtist setText: [info objectForKey: @"artist"] animated: YES];
 	}
 	
 	info = [mpclient nextSongInfo];
 	if (!info || !([mpclient isPlaying] || [mpclient isPaused]))
 	{
-		[nextSongLabel setText: @""];
-		[nextSong setText: @""];
+		[nextSongLabel setText: @"" animated: YES];
+		[nextSong setText: @"" animated: YES];
 	} else {
-		[nextSongLabel setText: @"Next Up:"];
-		[nextSong setText: [info objectForKey: @"title"]];
+		[nextSongLabel setText: @"Next Up:" animated: YES];
+		[nextSong setText: [info objectForKey: @"title"] animated: YES];
 	}
 	
 	currentPlaylistPosition = -1;

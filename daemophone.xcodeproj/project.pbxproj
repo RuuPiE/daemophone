@@ -74,6 +74,7 @@
 		D08B6CC811E0DFB500F8EB76 /* tag.c in Sources */ = {isa = PBXBuildFile; fileRef = D08B6C8011E0DFB500F8EB76 /* tag.c */; };
 		D08B6D1E11E0E54300F8EB76 /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = D08B6D1C11E0E54300F8EB76 /* COPYING */; };
 		D08B6D1F11E0E54300F8EB76 /* README in Resources */ = {isa = PBXBuildFile; fileRef = D08B6D1D11E0E54300F8EB76 /* README */; };
+		D0A3382B11E1100100D6D1D6 /* UILabel+SetTextAnimated.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A3382A11E1100100D6D1D6 /* UILabel+SetTextAnimated.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -230,6 +231,8 @@
 		D08B6CFF11E0E23C00F8EB76 /* example.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = example.c; sourceTree = "<group>"; };
 		D08B6D1C11E0E54300F8EB76 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
 		D08B6D1D11E0E54300F8EB76 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		D0A3382911E1100100D6D1D6 /* UILabel+SetTextAnimated.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UILabel+SetTextAnimated.h"; sourceTree = "<group>"; };
+		D0A3382A11E1100100D6D1D6 /* UILabel+SetTextAnimated.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UILabel+SetTextAnimated.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +278,7 @@
 			isa = PBXGroup;
 			children = (
 				D08B6C0911E0DFB500F8EB76 /* libmpdclient */,
+				D0A3382811E1100100D6D1D6 /* Categories */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -535,6 +539,15 @@
 			path = test;
 			sourceTree = "<group>";
 		};
+		D0A3382811E1100100D6D1D6 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				D0A3382911E1100100D6D1D6 /* UILabel+SetTextAnimated.h */,
+				D0A3382A11E1100100D6D1D6 /* UILabel+SetTextAnimated.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -651,6 +664,7 @@
 				D08B6CC611E0DFB500F8EB76 /* sticker.c in Sources */,
 				D08B6CC711E0DFB500F8EB76 /* sync.c in Sources */,
 				D08B6CC811E0DFB500F8EB76 /* tag.c in Sources */,
+				D0A3382B11E1100100D6D1D6 /* UILabel+SetTextAnimated.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
