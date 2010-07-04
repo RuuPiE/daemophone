@@ -1,0 +1,30 @@
+libmpdclient 2.2 (2010/04/25)
+* MixRamp support
+* fix the LIBMPDCLIENT_CHECK_VERSION() macro
+
+libmpdclient 2.1 (2009/12/06)
+* status: added mpd_status_get_elapsed_ms()
+* sticker: added sticker support
+* song: copy last_modified value in mpd_song_dup()
+* socket, async: use WSAGetLastError() instead of errno on WIN32
+* socket: connect in non-blocking mode
+* socket: set the close-on-exec flag
+* tag: support C++
+* sync: optimistic write, reduce select() calls
+* Makefile.am: use --version-script only with GNU ld
+* added library version compile-time checks
+
+libmpdclient 2.0 (2009/10/03)
+* complete rewrite and API redesign
+* shared library with a documented stable API
+* asynchronous API
+* too many minor changes to list here
+
+libmpdclient 0.13 (2007/05/28)
+libmpdclient 0.12.1 (2007/03/21)
+libmpdclient 0.12 (2006/09/22)
+libmpdclient 0.11.1 (2004/06/18)
+libmpdclient 0.11 (2004/06/17)
+libmpdclient 0.10 (2004/03/03)
+* these versions were never actually released; its sources were copied
+  into the C/C++ clients

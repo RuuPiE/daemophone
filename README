@@ -1,0 +1,9 @@
+daemophone is an iPad MPD client, with source released under the GNU
+GPL. It's not finished yet, but its feature list is growing rapidly.
+
+it uses the generously licensed libmpdclient, from http://musicpd.org/
+
+It currently also uses a gear icon from Glyphish
+(http://glyphish.com/), under a Creative Commons license, and the
+default album art from Theremin (https://theremin.sigterm.eu/), a
+GPL'd Mac OS X MPD client.

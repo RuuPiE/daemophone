@@ -1,0 +1,118 @@
+diff -rupN libmpdclient/config.h libmpdclient-modified/config.h
+--- libmpdclient/config.h	1969-12-31 19:00:00.000000000 -0500
++++ libmpdclient-modified/config.h	2010-07-04 11:23:41.000000000 -0400
+@@ -0,0 +1,4 @@
++/* this file is a hack -- it was never generated, just guessed at */
++
++#define DEFAULT_HOST "localhost"
++#define DEFAULT_PORT 6600
+diff -rupN libmpdclient/include/mpd/connection.h libmpdclient-modified/include/mpd/connection.h
+--- libmpdclient/include/mpd/connection.h	2010-04-25 20:50:45.000000000 -0400
++++ libmpdclient-modified/include/mpd/connection.h	2010-07-04 11:16:22.000000000 -0400
+@@ -212,6 +212,14 @@ bool
+ mpd_connection_clear_error(struct mpd_connection *connection);
+ 
+ /**
++ * Same as mpd_connection_clear_error, but it forces itself when the error
++ * is a timeout error. It also resets the connection to a 'read' state.
++ * This should only be used during timouts while reading idle events.
++ */
++void
++mpd_connection_clear_error_force(struct mpd_connection *connection);
++
++/**
+  * Returns a three-tuple containing the major, minor and patch version
+  * of the MPD protocol.
+  */
+diff -rupN libmpdclient/include/mpd/status.h libmpdclient-modified/include/mpd/status.h
+--- libmpdclient/include/mpd/status.h	2010-04-25 20:50:45.000000000 -0400
++++ libmpdclient-modified/include/mpd/status.h	2010-07-04 11:16:22.000000000 -0400
+@@ -222,6 +222,13 @@ mpd_status_get_song_pos(const struct mpd
+  */
+ int
+ mpd_status_get_song_id(const struct mpd_status *status);
++	
++mpd_pure
++int
++mpd_status_get_next_song_pos(const struct mpd_status *status);
++
++int
++mpd_status_get_next_song_id(const struct mpd_status *status);
+ 
+ /**
+  * Returns time in seconds that have elapsed in the currently playing/paused
+diff -rupN libmpdclient/src/error.c libmpdclient-modified/src/error.c
+--- libmpdclient/src/error.c	2010-04-25 20:50:45.000000000 -0400
++++ libmpdclient-modified/src/error.c	2010-07-04 11:16:17.000000000 -0400
+@@ -69,3 +69,12 @@ mpd_connection_clear_error(struct mpd_co
+ 	mpd_error_clear(&connection->error);
+ 	return true;
+ }
++
++void
++mpd_connection_clear_error_force(struct mpd_connection *connection)
++{
++	// should only be called when timed out from reading IDLE!
++	assert(connection->error.code == MPD_ERROR_TIMEOUT);
++	mpd_error_clear(&connection->error);
++	connection->receiving = true;
++}
+diff -rupN libmpdclient/src/status.c libmpdclient-modified/src/status.c
+--- libmpdclient/src/status.c	2010-04-25 20:50:45.000000000 -0400
++++ libmpdclient-modified/src/status.c	2010-07-04 11:16:17.000000000 -0400
+@@ -86,6 +86,16 @@ struct mpd_status {
+ 
+ 	/** Song ID of the currently selected song */
+ 	int song_id;
++	
++	/**
++	 * If a song is next up (usually the case when state
++	 * is PLAY or PAUSE), this is the position of the next
++	 * playing song in the queue, beginning with 0.
++	 */
++	int next_song_pos;
++	
++	/** Song ID of the next song */
++	int next_song_id;
+ 
+ 	/**
+ 	 * Time in seconds that have elapsed in the currently
+@@ -132,6 +142,8 @@ mpd_status_begin(void)
+ 	status->state = MPD_STATE_UNKNOWN;
+ 	status->song_pos = -1;
+ 	status->song_id = -1;
++	status->next_song_pos = -1;
++	status->next_song_id = -1;
+ 	status->elapsed_time = 0;
+ 	status->elapsed_ms = 0;
+ 	status->total_time = 0;
+@@ -226,6 +238,10 @@ mpd_status_feed(struct mpd_status *statu
+ 		status->song_pos = atoi(pair->value);
+ 	else if (strcmp(pair->name, "songid") == 0)
+ 		status->song_id = atoi(pair->value);
++	else if (strcmp(pair->name, "nextsong") == 0)
++		status->next_song_pos = atoi(pair->value);
++	else if (strcmp(pair->name, "nextsongid") == 0)
++		status->next_song_id = atoi(pair->value);
+ 	else if (strcmp(pair->name, "time") == 0) {
+ 		char *endptr;
+ 
+@@ -343,6 +359,18 @@ mpd_status_get_song_id(const struct mpd_
+ 	return status->song_id;
+ }
+ 
++int
++mpd_status_get_next_song_pos(const struct mpd_status *status)
++{
++	return status->next_song_pos;
++}
++
++int
++mpd_status_get_next_song_id(const struct mpd_status *status)
++{
++	return status->next_song_id;
++}
++
+ unsigned
+ mpd_status_get_elapsed_time(const struct mpd_status *status)
+ {
