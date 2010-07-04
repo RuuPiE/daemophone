@@ -280,7 +280,8 @@
 	
 	NSMutableArray* items = [[toolbar items] mutableCopy];
 	[items addObject: popoverButton];
-	[toolbar setItems: items animated: YES];
+	// no animations -> no weird popover errors
+	[toolbar setItems: items animated: NO];
 	[items release];
 	
 	// we set the size manually so we're sure we can hit the toggle button again
@@ -289,15 +290,31 @@
 	size.width = 320;
 	size.height = 700;
 	[popover setPopoverContentSize: size];
+	
+	// show the popover so that people know it's MOVED from where it is normally
+	// we show it on the right instead of the usual left so that people can still
+	// read and interact meaningfully with the playlist
+	// showing it automatically helps people find it, and they can hide it if they want
+	
+	// we can't do this right away, or the popover present will fail when we open
+	// the app in portrait mode (this view has no window, and the popover complains)
+	// so, we use a timer, and reuse our togglePopover: selector
+	
+	// also, a delay is nice so it plays well with the orientation change
+	
+	[NSTimer scheduledTimerWithTimeInterval: 0.6 target: self selector: @selector(togglePopover:) userInfo: popoverButton repeats: NO];
 }
 
 - (void) splitViewController: (UISplitViewController*) svc willShowViewController: (UIViewController*) aViewController invalidatingBarButtonItem: (UIBarButtonItem*) barButtonItem
 {
+	if (popover.popoverVisible)
+		[popover dismissPopoverAnimated: NO];
 	self.popover = nil;
 	
 	NSMutableArray* items = [[toolbar items] mutableCopy];
 	[items removeLastObject];
-	[toolbar setItems: items animated: YES];
+	// no animations -> no weird popover errors
+	[toolbar setItems: items animated: NO];
 	[items release];
 }
 
@@ -314,6 +331,11 @@
 {
 	if (popover == nil)
 		return;
+	
+	// a more subtle problem may be that our button is not actually /in/ the toolbar anymore
+	if (![toolbar.items containsObject: popoverButton])
+		return;
+	
 	if (popover.popoverVisible == YES)
 	{
 		[popover dismissPopoverAnimated: YES];
