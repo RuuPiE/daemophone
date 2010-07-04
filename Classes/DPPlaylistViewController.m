@@ -270,7 +270,9 @@
 {
 	// playlist logic
 	
-	[mpclient playPlaylistPosition: [indexPath row]];
+	// only change songs if we touched a *different* song
+	if (currentPlaylistPosition != [indexPath row])
+		[mpclient playPlaylistPosition: [indexPath row]];
 	
 	[tableView deselectRowAtIndexPath: indexPath animated: YES];
 }
