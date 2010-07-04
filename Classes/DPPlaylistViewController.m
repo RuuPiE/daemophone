@@ -43,6 +43,13 @@
     [super viewDidLoad];
 	[mpclient setPlaylistViewController: self];
 	positionTimer = [NSTimer scheduledTimerWithTimeInterval: 1.0 target: self selector: @selector(songPositionTick:) userInfo: nil repeats: YES];
+	
+	// clear out the interface builder dummy text so it doesn't show up during animation
+	[currentTitle setText: @""];
+	[currentAlbum setText: @""];
+	[currentArtist setText: @""];
+	[nextSongLabel setText: @""];
+	[nextSong setText: @""];
 }
 
 
