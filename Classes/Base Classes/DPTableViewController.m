@@ -47,6 +47,7 @@
 	// 2 - (UILabel) Album
 	// 3 - (UILabel) Artist
 	// 4 - (UIImageView) Now Playing Dingus
+	// 5 - (UIView) background view (gradient!)
 	UITableViewCell* cell = [self cellForTable: tableView withIdentifier: @"DPPlaylistCell"];
 	
 	UILabel* tmp;
@@ -62,6 +63,19 @@
 	
 	UIView* playdingus = [cell viewWithTag: 4];
 	[playdingus setHidden: !playing];
+	
+	UIView* background = [cell viewWithTag: 5];
+	if (playing)
+	{
+		[background setHidden: NO];
+		
+		UIColor* color;
+		color = [[UIColor alloc] initWithWhite: 0.8 alpha: 1.0];
+		[background setBackgroundColor: color];
+		[color release];
+	} else {
+		[background setHidden: YES];
+	}
 	
 	return cell;
 }
