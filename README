@@ -1,7 +1,9 @@
 daemophone is an iPad MPD client, with source released under the GNU
 GPL. It's not finished yet, but its feature list is growing rapidly.
 
-it uses the generously licensed libmpdclient, from http://musicpd.org/
+it uses the generously licensed libmpdclient, from
+(http://musicpd.org/), with a few minor changes / improvements get
+information about the next song and to do zero-blocking idle calls.
 
 It currently also uses a gear icon from Glyphish
 (http://glyphish.com/), under a Creative Commons license, and the
