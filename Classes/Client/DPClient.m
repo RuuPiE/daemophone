@@ -155,8 +155,9 @@
 
 - (void) updateAll
 {
-	[self updatePlayer];
+	// player can use info from the queue, so update queue before player
 	[self updateQueue];
+	[self updatePlayer];
 }
 
 #pragma mark getters / setters
@@ -266,7 +267,11 @@
 		if (events & MPD_IDLE_PLAYER)
 			[self updatePlayer];
 		if (events & MPD_IDLE_QUEUE)
+		{
+			// update queue *and* player -- player handles currently playing queue item
 			[self updateQueue];
+			[self updatePlayer];
+		}
 		
 		while ([self needInterrupt])
 			[NSThread sleepForTimeInterval: MPD_IDLE_INTERVALS / 1000.0];

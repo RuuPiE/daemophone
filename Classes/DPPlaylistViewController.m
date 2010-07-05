@@ -150,10 +150,25 @@
 		[nextSong setText: [info objectForKey: @"title"] animated: YES];
 	}
 	
+	int lastPlaylistPosition = currentPlaylistPosition;
+	
 	currentPlaylistPosition = -1;
 	if ([mpclient isPlaying] || [mpclient isPaused])
 		currentPlaylistPosition = [mpclient currentSongPlaylistPosition];
-	[playlistTableView reloadData];
+
+	// prevent creating two animations for one cell
+	if (currentPlaylistPosition != lastPlaylistPosition)
+	{
+		NSMutableArray* indexPaths = [[NSMutableArray alloc] initWithCapacity: 2];
+		
+		if (lastPlaylistPosition != -1)
+			[indexPaths addObject: [NSIndexPath indexPathForRow: lastPlaylistPosition inSection: 0]];
+		if (currentPlaylistPosition != -1)
+			[indexPaths addObject: [NSIndexPath indexPathForRow: currentPlaylistPosition inSection: 0]];
+		
+		[playlistTableView reloadRowsAtIndexPaths: indexPaths withRowAnimation: UITableViewRowAnimationFade];
+		[indexPaths release];
+	}
 }
 
 - (void) updateSongPositionUI
@@ -228,7 +243,14 @@
 		[playlist release];
 	playlist = [mpclient playlist];
 	[playlist retain];
-	[playlistTableView reloadData];
+	
+	NSRange range;
+	range.location = 0;
+	range.length = 1;
+	NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndexesInRange: range];
+	[playlistTableView reloadSections: indexSet withRowAnimation: UITableViewRowAnimationFade];
+	[indexSet release];
+	//[playlistTableView reloadData];
 }
 
 #pragma mark Table View Data Source
