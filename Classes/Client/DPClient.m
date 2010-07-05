@@ -399,6 +399,9 @@
 	{
 		tmp = [[NSString alloc] initWithCString: tmpc];
 		[info setObject: tmp forKey: @"uri"];
+		// use this for title also, if we have to
+		if (![[info allKeys] containsObject: @"title"])
+			[info setObject: tmp forKey: @"title"];
 		[tmp release];
 	}
 	
