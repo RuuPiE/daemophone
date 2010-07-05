@@ -202,6 +202,8 @@
 
 - (void) idleThreadSelector: (id) unused
 {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	
 	// setup
 	NSLog(@"mpd idle: thread started");
 	[self updateAll];
@@ -275,10 +277,16 @@
 		
 		while ([self needInterrupt])
 			[NSThread sleepForTimeInterval: MPD_IDLE_INTERVALS / 1000.0];
+		
+		// pool maintainance
+		[pool release];
+		pool = [[NSAutoreleasePool alloc] init];
 	}
 	
 	// teardown (don't trust mpd, may be that mpd == NULL)
 	NSLog(@"mpd idle: thread stopping");
+	
+	[pool release];
 }
 
 #pragma mark connection managing
