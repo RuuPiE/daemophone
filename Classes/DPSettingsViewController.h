@@ -6,11 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "DPTableViewController.h"
 
-@interface DPSettingsViewController : UIViewController
+@interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource>
 {
-
+	UITableView* settingsTableView;
 }
+
+@property (nonatomic, retain) IBOutlet UITableView* settingsTableView;
 
 - (IBAction) dismissSettings: (id) button;
 
