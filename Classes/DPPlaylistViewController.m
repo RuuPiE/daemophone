@@ -333,7 +333,9 @@
 	
 	// also, a delay is nice so it plays well with the orientation change
 	
-	[NSTimer scheduledTimerWithTimeInterval: 0.6 target: self selector: @selector(togglePopover:) userInfo: popoverButton repeats: NO];
+	// THERE MUST BE A NICE WAY TO DO THIS, BUT I HAVE NO IDEA. THIS SOLUTION IS A HACK.
+	// FIXME FIXME FIXME!
+	//[NSTimer scheduledTimerWithTimeInterval: 0.6 target: self selector: @selector(togglePopover:) userInfo: popoverButton repeats: NO];
 }
 
 - (void) splitViewController: (UISplitViewController*) svc willShowViewController: (UIViewController*) aViewController invalidatingBarButtonItem: (UIBarButtonItem*) barButtonItem
@@ -353,6 +355,10 @@
 
 - (IBAction) showSettings: (id) button
 {
+	// get rid of popover, if it's visible. it screws things up ROYALLY if we leave it
+	if (popover != nil && popover.popoverVisible)
+		[popover dismissPopoverAnimated: YES];
+	
 	DPSettingsViewController* settings = [[DPSettingsViewController alloc] initWithNibName: @"DPSettingsViewController" bundle: nil];
 	[self.splitViewController presentModalViewController: settings animated: YES];
 	[settings release];
