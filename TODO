@@ -1,0 +1,28 @@
+Here's a place for me to dump what I still need to do, as it occurs to me.
+
+volume setting
+seeking
+sane seek bar positioning
+
+playlist load/save
+playlist clear
+playlist item reordering/removing
+better playlist reload animations (?)
+continuous artist/album subtitle regions
+
+non-hack way to let users know the popover is placed non-standard
+
+multiple server support
+
+mpd settings page
+shuffle/repeat
+outputs
+
+add by filename browser
+add by metadata
+add URI
+append/replace toggle (or not, have them just clear playlist)
+load playlist from URI (put with playlist stuff?)
+
+default launch image
+about page (licenses, ...)
