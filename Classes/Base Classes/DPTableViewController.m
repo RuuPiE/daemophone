@@ -34,6 +34,7 @@
 - (UITableViewCell*) cellForTable: (UITableView*) tableView withText: (NSString*) text
 {
 	UITableViewCell* cell = [self cellForTable: tableView withIdentifier: @"UITableViewCell"];
+	[cell setAccessoryView: nil];
 	[cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator];
 	[cell.textLabel setText: text];
 	return cell;
