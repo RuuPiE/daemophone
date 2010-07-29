@@ -24,7 +24,7 @@ enum EPlayModes
 	EPM_COUNT
 };
 
-@interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource>
+@interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 {
 	UITableView* settingsTableView;
 }

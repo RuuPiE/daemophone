@@ -59,6 +59,14 @@
 - (void) updateOptions
 {
 	// just reload the table
+	
+	//NSRange range;
+	//range.location = 0;
+	//range.length = 1;
+	//NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndexesInRange: range];
+	//[settingsTableView reloadSections: indexSet withRowAnimation: UITableViewRowAnimationFade];
+	//[indexSet release];
+	
 	[settingsTableView reloadData];
 }
 
@@ -185,8 +193,79 @@
 	// do our magick if this is the crossfade control
 	if ([indexPath section] == ESS_PLAYMODES && [indexPath row] == EPM_CROSSFADE)
 	{
+		UIPickerView* control = [[UIPickerView alloc] initWithFrame: CGRectMake(0.0, 0.0, 200.0, 200.0)];
+		control.delegate = self;
+		control.dataSource = self;
+		[control setShowsSelectionIndicator: YES];
+		
+		[control setBackgroundColor: [UIColor whiteColor]];
+		[control setOpaque: YES];
+		UIViewController* controller = [[UIViewController alloc] initWithNibName: nil bundle: nil];
+		controller.view = control;
+		
+		UIPopoverController* popover = [[UIPopoverController alloc] initWithContentViewController: controller];
+		
+		popover.popoverContentSize = control.frame.size;
+		popover.delegate = self;
+		
+		[controller release];
+		[control release];
+		
+		// here's some hokey-pokey to make sure the popover is centered on the
+		// actual content of the accessory view, not the whole rect
+		UITableViewCell* selectedCell = [tableView cellForRowAtIndexPath: indexPath];
+		CGRect rect = selectedCell.accessoryView.frame;
+		CGSize fitSize = [selectedCell.accessoryView sizeThatFits: rect.size];
+		// align right, valign center
+		rect.origin.x += rect.size.width - fitSize.width;
+		rect.origin.y += (rect.size.height - fitSize.height) / 2.0;
+		rect.size = fitSize;
+		
+		[popover presentPopoverFromRect: rect inView: selectedCell permittedArrowDirections: UIPopoverArrowDirectionAny animated: YES];
+		
+		unsigned int crossfade = [mpclient crossfade];
+		[control selectRow: crossfade inComponent: 0 animated: NO];
+		[control selectRow: crossfade inComponent: 0 animated: NO];
+		NSLog(@"selected row %i", crossfade);
+		
 		[tableView deselectRowAtIndexPath: indexPath animated: YES];
 	}
+}
+
+#pragma mark Picker View delegate/data source
+
+- (NSInteger) numberOfComponentsInPickerView: (UIPickerView*) pickerView
+{
+	return 1;
+}
+
+- (NSInteger) pickerView: (UIPickerView*) pickerView numberOfRowsInComponent: (NSInteger) component
+{
+	// up to 30s crossfade, and off = 31 options
+	return 31;
+}
+
+- (NSString*) pickerView: (UIPickerView*) pickerView titleForRow: (NSInteger) row forComponent: (NSInteger) component
+{
+	if (row == 0)
+		return @"off";
+	if (row == 1)
+		return @"1 second";
+	
+	// though I hate to use autorelease on iOS, there seems to be no other way
+	return [[[NSString alloc] initWithFormat: @"%i seconds", row] autorelease];
+}
+
+- (void) pickerView: (UIPickerView*) pickerView didSelectRow: (NSInteger) row  inComponent: (NSInteger) component
+{
+	[mpclient setCrossfade: row];
+}
+
+#pragma mark Popover delegate methods
+
+- (void) popoverControllerDidDismissPopover: (UIPopoverController*) popoverController
+{
+	[popoverController release];
 }
 
 #pragma mark IB actions
