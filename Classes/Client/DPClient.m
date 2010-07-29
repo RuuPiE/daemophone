@@ -211,7 +211,7 @@
 				[mutableOutput setObject: tmpn forKey: @"enabled"];
 				[tmpn release];
 				
-				tmps = [[NSString alloc] initWithCString: mpd_output_get_name(output)];
+				tmps = [[NSString alloc] initWithUTF8String: mpd_output_get_name(output)];
 				[mutableOutput setObject: tmps forKey: @"name"];
 				[tmps release];
 				
@@ -500,7 +500,7 @@
 	tmpc = mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 	if (tmpc != NULL)
 	{
-		tmp = [[NSString alloc] initWithCString: tmpc];
+		tmp = [[NSString alloc] initWithUTF8String: tmpc];
 		[info setObject: tmp forKey: @"artist"];
 		[tmp release];
 	}
@@ -508,7 +508,7 @@
 	tmpc = mpd_song_get_tag(song, MPD_TAG_ALBUM, 0);
 	if (tmpc != NULL)
 	{
-		tmp = [[NSString alloc] initWithCString: tmpc];
+		tmp = [[NSString alloc] initWithUTF8String: tmpc];
 		[info setObject: tmp forKey: @"album"];
 		[tmp release];
 	}
@@ -516,7 +516,7 @@
 	tmpc = mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
 	if (tmpc != NULL)
 	{
-		tmp = [[NSString alloc] initWithCString: tmpc];
+		tmp = [[NSString alloc] initWithUTF8String: tmpc];
 		[info setObject: tmp forKey: @"title"];
 		[tmp release];
 	}
@@ -524,7 +524,7 @@
 	tmpc = mpd_song_get_uri(song);
 	if (tmpc != NULL)
 	{
-		tmp = [[NSString alloc] initWithCString: tmpc];
+		tmp = [[NSString alloc] initWithUTF8String: tmpc];
 		[info setObject: tmp forKey: @"uri"];
 		// use this for title also, if we have to
 		if (![[info allKeys] containsObject: @"title"])
