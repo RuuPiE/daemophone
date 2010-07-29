@@ -11,8 +11,6 @@
 @interface DPGradientView : UIView
 {
 	CGGradientRef gradient;
-	CGColorSpaceRef rgbColorspace;
-	CGColorRef bgColor;
 }
 
 @end

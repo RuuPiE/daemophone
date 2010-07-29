@@ -35,36 +35,31 @@
 		1.0, 1.0, 1.0, 0.00, // end color
 	};
 	
-	rgbColorspace = CGColorSpaceCreateDeviceRGB();
+	CGColorSpaceRef rgbColorspace = CGColorSpaceCreateDeviceRGB();
 	gradient = CGGradientCreateWithColorComponents(rgbColorspace, components, locations, num_locations);
-	
-	bgColor = [self.backgroundColor CGColor];
-	CGColorRetain(bgColor);
+	CGColorSpaceRelease(rgbColorspace);
 	
 	return self;
 }
 
 - (void) setBackgroundColor: (UIColor*) color
 {
-	CGColorRef newColor = color.CGColor;
-	if (CGColorGetAlpha(newColor) == 0.0)
+	if (CGColorGetAlpha(color.CGColor) == 0.0)
 	{
 		// skip this, it lies!
+		// this is usually when a table cell is selected, but we want the gradient
+		// to remain opaque
 		return;
 	}
 	
 	[super setBackgroundColor: color];
-	CGColorRelease(bgColor);
-	bgColor = newColor;
-	CGColorRetain(bgColor);
-	
-	// keeps Instruments from complaining about a leak, but causes a double free error
-	//CGColorRelease(newColor);
 }
 
 - (void) drawRect: (CGRect) rect
 {
     CGContextRef c = UIGraphicsGetCurrentContext();
+	
+	CGColorRef bgColor = self.backgroundColor.CGColor;
 	
 	CGContextSetFillColorSpace(c, CGColorGetColorSpace(bgColor));
 	//CGContextSetRGBFillColor(c, 1.0, 0.0, 0.0, 1.0);
@@ -81,8 +76,6 @@
 - (void) dealloc
 {
 	CGGradientRelease(gradient);
-	CGColorSpaceRelease(rgbColorspace);
-	CGColorRelease(bgColor);
     [super dealloc];
 }
 
