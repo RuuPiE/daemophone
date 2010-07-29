@@ -3,6 +3,7 @@ Here's a place for me to dump what I still need to do, as it occurs to me.
 volume setting
 seeking
 sane seek bar positioning
+album art
 
 playlist load/save
 playlist clear
@@ -12,11 +13,8 @@ continuous artist/album subtitle regions
 
 non-hack way to let users know the popover is placed non-standard
 
-multiple server support
-
 mpd settings page
-crossfade
-outputs
+multiple server support
 
 add by filename browser
 add by metadata
