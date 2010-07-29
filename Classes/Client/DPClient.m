@@ -316,14 +316,17 @@
 		
 		NSLog(@"mpd idle: events: %i", events);
 		
-		if (events & MPD_IDLE_PLAYER)
-			[self updatePlayer];
 		if (events & MPD_IDLE_QUEUE)
 		{
 			// update queue *and* player -- player handles currently playing queue item
 			[self updateQueue];
-			[self updatePlayer];
+			
+			// if we have a player update, skip this (we do it later)
+			if (!(events & MPD_IDLE_PLAYER))
+				[self updatePlayer];
 		}
+		if (events & MPD_IDLE_PLAYER)
+			[self updatePlayer];
 		if (events & MPD_IDLE_OPTIONS)
 			[self updateOptions];
 		
