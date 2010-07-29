@@ -24,11 +24,13 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
+	[mpclient setSettingsViewController: self];
 }
 
 - (void) viewDidUnload
 {
     [super viewDidUnload];
+	[mpclient setSettingsViewController: nil];
     
 	self.settingsTableView = nil;
 }
@@ -52,31 +54,74 @@
     [super dealloc];
 }
 
+#pragma mark update after new server info
+
+- (void) updateOptions
+{
+	// just reload the table
+	[settingsTableView reloadData];
+}
+
 #pragma mark Table View Data Source
 
 - (NSInteger) numberOfSectionsInTableView: (UITableView*) tableView;
 {
-	return 1;
+	return ESS_COUNT;
 }
 
 - (NSInteger) tableView: (UITableView*) tableView numberOfRowsInSection: (NSInteger) section
 {
-	return 10;
+	switch (section)
+	{
+		case ESS_PLAYMODES:
+			return EPM_COUNT;
+	};
+	return 0;
 }
 
 - (NSString*) tableView: (UITableView*) tableView titleForHeaderInSection: (NSInteger) section
 {
-	return @"section name";
+	switch (section)
+	{
+		case ESS_PLAYMODES:
+			return @"Play Modes";
+	};
+	return nil;
 }
 
 - (UITableViewCell*) tableView: (UITableView*) tableView cellForRowAtIndexPath: (NSIndexPath*) indexPath;
-{
-	UITableViewCell* cell = [self cellForTable: tableView withText: @"settings"];
-	UISwitch* toggle = [[UISwitch alloc] initWithFrame: CGRectZero];
-	[cell setAccessoryView: toggle];
-	[toggle release];
+{	
+	if ([indexPath section] == ESS_PLAYMODES)
+	{
+		UITableViewCell* cell = [self cellForTable: tableView withText: @"settings"];
+		UISwitch* toggle = [[UISwitch alloc] initWithFrame: CGRectZero];
+		[cell setAccessoryView: toggle];
+		[toggle release];
+		
+		switch ([indexPath row])
+		{
+			case EPM_REPEAT:
+				[cell.textLabel setText: @"Repeat"];
+				[toggle setOn: [mpclient repeat]];
+				break;
+			case EPM_SINGLE:
+				[cell.textLabel setText: @"Single"];
+				[toggle setOn: [mpclient single]];
+				break;
+			case EPM_RANDOM:
+				[cell.textLabel setText: @"Random"];
+				[toggle setOn: [mpclient random]];
+				break;
+			case EPM_CONSUME:
+				[cell.textLabel setText: @"Consume"];
+				[toggle setOn: [mpclient consume]];
+				break;
+		}
+		
+		return cell;
+	}
 	
-	return cell;
+	return nil;
 }
 
 #pragma mark Table View Delegate

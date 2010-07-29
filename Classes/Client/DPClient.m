@@ -7,6 +7,7 @@
 #import "DPClient.h"
 
 #import "DPPlaylistViewController.h"
+#import "DPSettingsViewController.h"
 
 @interface DPClient ()
 - (void) idleThreadSelector: (id) unused;
@@ -30,6 +31,7 @@
 @synthesize currentSongInfo, nextSongInfo;
 @synthesize currentSongLength, currentSongPosition, isPlaying, isPaused;
 @synthesize playlist, currentSongPlaylistPosition;
+@synthesize repeat, random, single, consume;
 
 #pragma mark interrupt handling
 
@@ -76,6 +78,11 @@
 			isPlaying = mpd_status_get_state(status) == MPD_STATE_PLAY;
 			isPaused = mpd_status_get_state(status) == MPD_STATE_PAUSE;
 			
+			repeat = mpd_status_get_repeat(status);
+			random = mpd_status_get_random(status);
+			single = mpd_status_get_single(status);
+			consume = mpd_status_get_consume(status);
+			
 			current_song_id = mpd_status_get_song_id(status);
 			next_song_id = mpd_status_get_next_song_id(status);
 			currentSongPlaylistPosition = mpd_status_get_song_pos(status);
@@ -106,11 +113,42 @@
 		}
 	}
 	
+	if (settingsViewController != nil)
+	{
+		[settingsViewController performSelectorOnMainThread: @selector(update) withObject: nil waitUntilDone: NO];
+	}
+	
 	if (playlistViewController != nil)
 	{
 		[playlistViewController performSelectorOnMainThread: @selector(updateCurrentSong) withObject: nil waitUntilDone: NO];
 		[playlistViewController performSelectorOnMainThread: @selector(updateCurrentSongPosition) withObject: nil waitUntilDone: NO];
 		[playlistViewController performSelectorOnMainThread: @selector(updateControls) withObject: nil waitUntilDone: NO];
+	}
+}
+
+- (void) updateOptions
+{	
+	// player options - crossfade, repeat, ...
+	if (mpd)
+	{
+		@synchronized(self)
+		{
+			struct mpd_status* status = mpd_run_status(mpd);
+			if ([self handleError: @"could not get status"])
+				return;
+			
+			repeat = mpd_status_get_repeat(status);
+			random = mpd_status_get_random(status);
+			single = mpd_status_get_single(status);
+			consume = mpd_status_get_consume(status);
+			
+			mpd_status_free(status);
+		}
+	}
+	
+	if (settingsViewController != nil)
+	{
+		[settingsViewController performSelectorOnMainThread: @selector(updateOptions) withObject: nil waitUntilDone: NO];
 	}
 }
 
@@ -158,6 +196,7 @@
 	// player can use info from the queue, so update queue before player
 	[self updateQueue];
 	[self updatePlayer];
+	[self updateOptions];
 }
 
 #pragma mark getters / setters
@@ -172,12 +211,32 @@
 	if (playlistViewController != nil)
 		[playlistViewController release];
 	playlistViewController = pvc;
-	if (playlistViewController != nil)
-		[playlistViewController retain];
+	if (playlistViewController == nil)
+		return;
+	[playlistViewController retain];
 	
+	// update the controller
 	[playlistViewController updateCurrentSong];
 	[playlistViewController updateCurrentSongPosition];
 	[playlistViewController updateControls];
+}
+
+- (DPSettingsViewController*) settingsViewController
+{
+	return settingsViewController;
+}
+
+- (void) setSettingsViewController: (DPSettingsViewController*) svc
+{
+	if (settingsViewController != nil)
+		[settingsViewController release];
+	settingsViewController = svc;
+	if (settingsViewController == nil)
+		return;
+	[settingsViewController retain];
+	
+	// update the controller
+	[settingsViewController updateOptions];
 }
 
 - (void) dealloc
@@ -185,6 +244,7 @@
 	[self disconnect];
 	
 	self.playlistViewController = nil;
+	self.settingsViewController = nil;
 	
 	if (currentSongInfo != nil)
 		[currentSongInfo release];
@@ -274,6 +334,8 @@
 			[self updateQueue];
 			[self updatePlayer];
 		}
+		if (events & MPD_IDLE_OPTIONS)
+			[self updateOptions];
 		
 		while ([self needInterrupt])
 			[NSThread sleepForTimeInterval: MPD_IDLE_INTERVALS / 1000.0];

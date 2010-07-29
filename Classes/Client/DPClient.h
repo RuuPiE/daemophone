@@ -19,10 +19,12 @@
 #define mpclient ([DPClient sharedClient])
 
 @class DPPlaylistViewController;
+@class DPSettingsViewController;
 
 @interface DPClient : NSObject
 {
 	DPPlaylistViewController* playlistViewController;
+	DPSettingsViewController* settingsViewController;
 	
 	NSDictionary* currentSongInfo;
 	NSDictionary* nextSongInfo;
@@ -33,6 +35,11 @@
 	BOOL isPlaying;
 	BOOL isPaused;
 	
+	BOOL repeat;
+	BOOL random;
+	BOOL single;
+	BOOL consume;
+	
 	NSArray* playlist;
 	
 	struct mpd_connection* mpd;
@@ -41,6 +48,7 @@
 }
 
 @property (nonatomic, retain) DPPlaylistViewController* playlistViewController;
+@property (nonatomic, retain) DPSettingsViewController* settingsViewController;
 
 @property (nonatomic, readonly) NSDictionary* currentSongInfo;
 @property (nonatomic, readonly) NSDictionary* nextSongInfo;
@@ -50,6 +58,11 @@
 @property (nonatomic, readonly) unsigned int currentSongPosition;
 @property (nonatomic, readonly) BOOL isPlaying;
 @property (nonatomic, readonly) BOOL isPaused;
+
+@property (nonatomic, readonly) BOOL repeat;
+@property (nonatomic, readonly) BOOL random;
+@property (nonatomic, readonly) BOOL single;
+@property (nonatomic, readonly) BOOL consume;
 
 @property (nonatomic, readonly) NSArray* playlist;
 

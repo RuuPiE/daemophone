@@ -8,6 +8,21 @@
 
 #import "DPTableViewController.h"
 
+enum ESettingsSections
+{
+	ESS_PLAYMODES,
+	ESS_COUNT
+};
+
+enum EPlayModes
+{
+	EPM_REPEAT,
+	EPM_RANDOM,
+	EPM_SINGLE,
+	EPM_CONSUME,
+	EPM_COUNT
+};
+
 @interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource>
 {
 	UITableView* settingsTableView;
@@ -15,6 +30,7 @@
 
 @property (nonatomic, retain) IBOutlet UITableView* settingsTableView;
 
+- (void) updateOptions;
 - (IBAction) dismissSettings: (id) button;
 
 @end
