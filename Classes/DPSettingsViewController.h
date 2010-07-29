@@ -11,6 +11,7 @@
 enum ESettingsSections
 {
 	ESS_PLAYMODES,
+	ESS_OUTPUTS,
 	ESS_COUNT
 };
 
@@ -27,11 +28,13 @@ enum EPlayModes
 @interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 {
 	UITableView* settingsTableView;
+	NSArray* outputSwitches;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView* settingsTableView;
 
 - (void) updateOptions;
+- (void) updateOutputs;
 - (IBAction) dismissSettings: (id) button;
 
 @end

@@ -70,6 +70,31 @@
 	[settingsTableView reloadData];
 }
 
+- (void) updateOutputs
+{
+	NSMutableArray* switches = [[NSMutableArray alloc] init];
+	
+	if ([mpclient outputs] != nil)
+	{
+		for (NSDictionary* output in [mpclient outputs])
+		{
+			UISwitch* newSwitch = [[UISwitch alloc] initWithFrame: CGRectZero];
+			[switches addObject: newSwitch];
+			
+			[newSwitch addTarget: self action: @selector(setOutput:) forControlEvents: UIControlEventValueChanged];
+			[newSwitch setOn: [[output objectForKey: @"enabled"] boolValue]];
+			
+			[newSwitch release];
+		}
+	}
+	
+	if (outputSwitches != nil)
+		[outputSwitches release];
+	outputSwitches = switches;
+	
+	[settingsTableView reloadData];
+}
+
 #pragma mark callbacks for settings controls
 
 - (void) setRepeat: (UISwitch*) toggle
@@ -92,6 +117,15 @@
 	[mpclient setConsume: toggle.on];
 }
 
+- (void) setOutput: (UISwitch*) toggle
+{
+	NSInteger index = [outputSwitches indexOfObject: toggle];
+	if (index == NSNotFound)
+		return;
+	unsigned int output_id = [[[[mpclient outputs] objectAtIndex: index] objectForKey: @"id"] unsignedIntValue];
+	
+	[mpclient setOutput: output_id on: toggle.on];
+}
 
 #pragma mark Table View Data Source
 
@@ -106,6 +140,10 @@
 	{
 		case ESS_PLAYMODES:
 			return EPM_COUNT;
+		case ESS_OUTPUTS:
+			if ([mpclient outputs] == nil)
+				return 0;
+			return [[mpclient outputs] count];
 	};
 	return 0;
 }
@@ -116,19 +154,21 @@
 	{
 		case ESS_PLAYMODES:
 			return @"Play Modes";
+		case ESS_OUTPUTS:
+			return @"Outputs";
 	};
 	return nil;
 }
 
 - (UITableViewCell*) tableView: (UITableView*) tableView cellForRowAtIndexPath: (NSIndexPath*) indexPath;
-{	
+{
+	UITableViewCell* cell = [self cellForTable: tableView withText: @"settings"];
+	UISwitch* toggle = [[UISwitch alloc] initWithFrame: CGRectZero];
+	[cell setAccessoryView: toggle];
+	[toggle release];
+	
 	if ([indexPath section] == ESS_PLAYMODES)
 	{
-		UITableViewCell* cell = [self cellForTable: tableView withText: @"settings"];
-		UISwitch* toggle = [[UISwitch alloc] initWithFrame: CGRectZero];
-		[cell setAccessoryView: toggle];
-		[toggle release];
-		
 		switch ([indexPath row])
 		{
 			case EPM_REPEAT:
@@ -172,6 +212,16 @@
 		
 		return cell;
 	}
+	
+	if ([indexPath section] == ESS_OUTPUTS && outputSwitches != nil)
+	{
+		[cell.textLabel setText: [[[mpclient outputs] objectAtIndex: [indexPath row]] objectForKey: @"name"]];
+		[cell setAccessoryView: [outputSwitches objectAtIndex: [indexPath row]]];
+		return cell;
+	}
+	
+	// we should never get here, but just in case
+	[cell release];
 	
 	return nil;
 }

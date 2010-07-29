@@ -43,6 +43,8 @@
 	
 	NSArray* playlist;
 	
+	NSArray* outputs;
+	
 	struct mpd_connection* mpd;
 	NSThread* idleThread;
 	unsigned int needInterruptNumber;
@@ -68,6 +70,8 @@
 
 @property (nonatomic, readonly) NSArray* playlist;
 
+@property (nonatomic, readonly) NSArray* outputs;
+
 + (DPClient*) sharedClient;
 
 - (void) updateAll;
@@ -90,5 +94,7 @@
 - (void) setCrossfade: (unsigned int) length;
 
 - (void) playPlaylistPosition: (unsigned int) pos;
+
+- (void) setOutput: (unsigned int) output_id on: (BOOL) on;
 
 @end

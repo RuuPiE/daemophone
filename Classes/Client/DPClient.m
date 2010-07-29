@@ -32,6 +32,7 @@
 @synthesize currentSongLength, currentSongPosition, isPlaying, isPaused;
 @synthesize playlist, currentSongPlaylistPosition;
 @synthesize repeat, random, single, consume, crossfade;
+@synthesize outputs;
 
 #pragma mark interrupt handling
 
@@ -182,12 +183,68 @@
 	}
 }
 
+- (void) updateOutputs
+{
+	if (outputs)
+		[outputs release];
+	
+	if (mpd)
+	{
+		NSMutableArray* mutableOutputs = [[NSMutableArray alloc] init];
+		
+		@synchronized(self)
+		{
+			struct mpd_output* output;
+			mpd_send_outputs(mpd);
+			
+			while (output = mpd_recv_output(mpd))
+			{
+				NSMutableDictionary* mutableOutput = [[NSMutableDictionary alloc] init];
+				NSString* tmps;
+				NSNumber* tmpn;
+				
+				tmpn = [[NSNumber alloc] initWithUnsignedInt: mpd_output_get_id(output)];
+				[mutableOutput setObject: tmpn forKey: @"id"];
+				[tmpn release];
+				
+				tmpn = [[NSNumber alloc] initWithBool: mpd_output_get_enabled(output)];
+				[mutableOutput setObject: tmpn forKey: @"enabled"];
+				[tmpn release];
+				
+				tmps = [[NSString alloc] initWithCString: mpd_output_get_name(output)];
+				[mutableOutput setObject: tmps forKey: @"name"];
+				[tmps release];
+				
+				[mutableOutputs addObject: mutableOutput];
+				[mutableOutput release];
+				mpd_output_free(output);
+			}
+			
+			if ([self handleError: @"could not get outputs"])
+			{
+				[mutableOutputs release];
+				return;
+			}
+		}
+		
+		outputs = mutableOutputs;
+	} else {
+		outputs = nil;
+	}
+	
+	if (settingsViewController != nil)
+	{
+		[settingsViewController performSelectorOnMainThread: @selector(updateOutputs) withObject: nil waitUntilDone: NO];
+	}
+}
+
 - (void) updateAll
 {
 	// player can use info from the queue, so update queue before player
 	[self updateQueue];
 	[self updatePlayer];
 	[self updateOptions];
+	[self updateOutputs];
 }
 
 #pragma mark getters / setters
@@ -228,6 +285,7 @@
 	
 	// update the controller
 	[settingsViewController updateOptions];
+	[settingsViewController updateOutputs];
 }
 
 - (void) dealloc
@@ -245,6 +303,9 @@
 	
 	if (playlist != nil)
 		[playlist release];
+	
+	if (outputs != nil)
+		[outputs release];
 	
 	[super dealloc];
 }
@@ -330,6 +391,8 @@
 			[self updatePlayer];
 		if (events & MPD_IDLE_OPTIONS)
 			[self updateOptions];
+		if (events & MPD_IDLE_OUTPUT)
+			[self updateOutputs];
 		
 		while ([self needInterrupt])
 			[NSThread sleepForTimeInterval: MPD_IDLE_INTERVALS / 1000.0];
@@ -595,6 +658,22 @@
 	{
 		mpd_run_crossfade(mpd, length);
 		[self handleError: @"could not modify crossfade length"];
+	}
+	[self postLock];
+}
+
+#pragma mark Output Control
+
+- (void) setOutput: (unsigned int) output_id on: (BOOL) on
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		if (on)
+			mpd_run_enable_output(mpd, output_id);
+		else
+			mpd_run_disable_output(mpd, output_id);
+		[self handleError: @"could not set output state"];
 	}
 	[self postLock];
 }
