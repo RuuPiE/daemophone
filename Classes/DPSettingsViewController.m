@@ -143,6 +143,23 @@
 				[toggle setOn: [mpclient consume]];
 				[toggle addTarget: self action: @selector(setConsume:) forControlEvents: UIControlEventValueChanged];
 				break;
+			case EPM_CROSSFADE:
+				[cell.textLabel setText: @"Crossfade"];
+				UILabel* label = [[UILabel alloc] initWithFrame: CGRectMake(0.0, 0.0, 200.0, 20.0)];
+				if ([mpclient crossfade] == 0)
+				{
+					[label setText: @"off"];
+				} else if ([mpclient crossfade] == 1)
+				{
+					[label setText: @"1 second"];
+				} else {
+					NSString* labelText = [[NSString alloc] initWithFormat: @"%i seconds", [mpclient crossfade]];
+					[label setText: labelText];
+					[labelText release];
+				}
+				[label setTextAlignment: UITextAlignmentRight];
+				[cell setAccessoryView: label];
+				break;
 		}
 		
 		return cell;
@@ -155,14 +172,21 @@
 
 - (NSIndexPath*) tableView: (UITableView*) tableView willSelectRowAtIndexPath: (NSIndexPath*) indexPath
 {
+	// we have ONE exception: the crossfade control
+	if ([indexPath section] == ESS_PLAYMODES && [indexPath row] == EPM_CROSSFADE)
+		return indexPath;
+	
 	// don't be selecting any settings, now
 	return nil;
 }
 
 - (void) tableView: (UITableView*) tableView didSelectRowAtIndexPath: (NSIndexPath*) indexPath
 {
-	// just in case, and as a future template if we need selecting
-	[tableView deselectRowAtIndexPath: indexPath animated: YES];
+	// do our magick if this is the crossfade control
+	if ([indexPath section] == ESS_PLAYMODES && [indexPath row] == EPM_CROSSFADE)
+	{
+		[tableView deselectRowAtIndexPath: indexPath animated: YES];
+	}
 }
 
 #pragma mark IB actions

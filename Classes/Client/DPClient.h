@@ -39,6 +39,7 @@
 	BOOL random;
 	BOOL single;
 	BOOL consume;
+	unsigned int crossfade;
 	
 	NSArray* playlist;
 	
@@ -63,6 +64,7 @@
 @property (nonatomic, readonly) BOOL random;
 @property (nonatomic, readonly) BOOL single;
 @property (nonatomic, readonly) BOOL consume;
+@property (nonatomic, readonly) unsigned int crossfade;
 
 @property (nonatomic, readonly) NSArray* playlist;
 
@@ -85,6 +87,7 @@
 - (void) setRandom: (BOOL) mode;
 - (void) setSingle: (BOOL) mode;
 - (void) setConsume: (BOOL) mode;
+- (void) setCrossfade: (unsigned int) length;
 
 - (void) playPlaylistPosition: (unsigned int) pos;
 

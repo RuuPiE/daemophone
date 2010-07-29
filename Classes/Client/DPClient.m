@@ -31,7 +31,7 @@
 @synthesize currentSongInfo, nextSongInfo;
 @synthesize currentSongLength, currentSongPosition, isPlaying, isPaused;
 @synthesize playlist, currentSongPlaylistPosition;
-@synthesize repeat, random, single, consume;
+@synthesize repeat, random, single, consume, crossfade;
 
 #pragma mark interrupt handling
 
@@ -131,6 +131,7 @@
 			random = mpd_status_get_random(status);
 			single = mpd_status_get_single(status);
 			consume = mpd_status_get_consume(status);
+			crossfade = mpd_status_get_crossfade(status);
 			
 			mpd_status_free(status);
 		}
@@ -583,6 +584,17 @@
 	{
 		mpd_run_consume(mpd, mode);
 		[self handleError: @"could not modify consume mode"];
+	}
+	[self postLock];
+}
+
+- (void) setCrossfade: (unsigned int) length
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_crossfade(mpd, length);
+		[self handleError: @"could not modify crossfade length"];
 	}
 	[self postLock];
 }
