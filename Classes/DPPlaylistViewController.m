@@ -166,7 +166,9 @@
 		if (currentPlaylistPosition != -1)
 			[indexPaths addObject: [NSIndexPath indexPathForRow: currentPlaylistPosition inSection: 0]];
 		
-		[playlistTableView reloadRowsAtIndexPaths: indexPaths withRowAnimation: UITableViewRowAnimationFade];
+		// added check, otherwise assertion in table fails
+		if ([mpclient playlist] != nil && [[mpclient playlist] count] > 0)
+			[playlistTableView reloadRowsAtIndexPaths: indexPaths withRowAnimation: UITableViewRowAnimationFade];
 		[indexPaths release];
 	}
 }
