@@ -81,6 +81,11 @@
 - (void) play;
 - (void) pause;
 
+- (void) setRepeat: (BOOL) mode;
+- (void) setRandom: (BOOL) mode;
+- (void) setSingle: (BOOL) mode;
+- (void) setConsume: (BOOL) mode;
+
 - (void) playPlaylistPosition: (unsigned int) pos;
 
 @end

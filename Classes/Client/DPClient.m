@@ -78,11 +78,6 @@
 			isPlaying = mpd_status_get_state(status) == MPD_STATE_PLAY;
 			isPaused = mpd_status_get_state(status) == MPD_STATE_PAUSE;
 			
-			repeat = mpd_status_get_repeat(status);
-			random = mpd_status_get_random(status);
-			single = mpd_status_get_single(status);
-			consume = mpd_status_get_consume(status);
-			
 			current_song_id = mpd_status_get_song_id(status);
 			next_song_id = mpd_status_get_next_song_id(status);
 			currentSongPlaylistPosition = mpd_status_get_song_pos(status);
@@ -111,11 +106,6 @@
 				return;
 			nextSongInfo = [self convertSongInfo: song];
 		}
-	}
-	
-	if (settingsViewController != nil)
-	{
-		[settingsViewController performSelectorOnMainThread: @selector(update) withObject: nil waitUntilDone: NO];
 	}
 	
 	if (playlistViewController != nil)
@@ -544,6 +534,52 @@
 	{
 		mpd_run_play_pos(mpd, pos);
 		[self handleError: @"could not play queue song"];
+	}
+	[self postLock];
+}
+
+#pragma mark player option setting
+
+- (void) setRepeat: (BOOL) mode
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_repeat(mpd, mode);
+		[self handleError: @"could not modify repeat mode"];
+	}
+	[self postLock];
+}
+
+- (void) setRandom: (BOOL) mode
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_random(mpd, mode);
+		[self handleError: @"could not modify random mode"];
+	}
+	[self postLock];
+}
+
+- (void) setSingle: (BOOL) mode
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_single(mpd, mode);
+		[self handleError: @"could not modify single mode"];
+	}
+	[self postLock];
+}
+
+- (void) setConsume: (BOOL) mode
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_consume(mpd, mode);
+		[self handleError: @"could not modify consume mode"];
 	}
 	[self postLock];
 }

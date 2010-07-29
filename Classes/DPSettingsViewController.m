@@ -62,6 +62,29 @@
 	[settingsTableView reloadData];
 }
 
+#pragma mark callbacks for settings controls
+
+- (void) setRepeat: (UISwitch*) toggle
+{
+	[mpclient setRepeat: toggle.on];
+}
+
+- (void) setRandom: (UISwitch*) toggle
+{
+	[mpclient setRandom: toggle.on];
+}
+
+- (void) setSingle: (UISwitch*) toggle
+{
+	[mpclient setSingle: toggle.on];
+}
+
+- (void) setConsume: (UISwitch*) toggle
+{
+	[mpclient setConsume: toggle.on];
+}
+
+
 #pragma mark Table View Data Source
 
 - (NSInteger) numberOfSectionsInTableView: (UITableView*) tableView;
@@ -103,18 +126,22 @@
 			case EPM_REPEAT:
 				[cell.textLabel setText: @"Repeat"];
 				[toggle setOn: [mpclient repeat]];
+				[toggle addTarget: self action: @selector(setRepeat:) forControlEvents: UIControlEventValueChanged];
 				break;
 			case EPM_SINGLE:
 				[cell.textLabel setText: @"Single"];
 				[toggle setOn: [mpclient single]];
+				[toggle addTarget: self action: @selector(setSingle:) forControlEvents: UIControlEventValueChanged];
 				break;
 			case EPM_RANDOM:
 				[cell.textLabel setText: @"Random"];
 				[toggle setOn: [mpclient random]];
+				[toggle addTarget: self action: @selector(setRandom:) forControlEvents: UIControlEventValueChanged];
 				break;
 			case EPM_CONSUME:
 				[cell.textLabel setText: @"Consume"];
 				[toggle setOn: [mpclient consume]];
+				[toggle addTarget: self action: @selector(setConsume:) forControlEvents: UIControlEventValueChanged];
 				break;
 		}
 		
