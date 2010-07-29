@@ -58,7 +58,8 @@
 	bgColor = newColor;
 	CGColorRetain(bgColor);
 	
-	CGColorRelease(newColor);
+	// keeps Instruments from complaining about a leak, but causes a double free error
+	//CGColorRelease(newColor);
 }
 
 - (void) drawRect: (CGRect) rect
