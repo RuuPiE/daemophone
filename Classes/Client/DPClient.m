@@ -27,6 +27,7 @@
 
 @implementation DPClient
 
+@synthesize host, port, password;
 @synthesize needInterruptNumber;
 @synthesize currentSongInfo, nextSongInfo;
 @synthesize currentSongLength, currentSongPosition, isPlaying, isPaused;
@@ -238,8 +239,19 @@
 	}
 }
 
+/* just updates to host, port, connection status ... */
+- (void) updateServerInfo
+{
+	if (settingsViewController != nil)
+	{
+		[settingsViewController performSelectorOnMainThread: @selector(updateServerInfo) withObject: nil waitUntilDone: NO];
+	}
+}
+
 - (void) updateAll
 {
+	// do NOT update server info -- that is handled specially
+	
 	// player can use info from the queue, so update queue before player
 	[self updateQueue];
 	[self updatePlayer];
@@ -284,6 +296,7 @@
 	[settingsViewController retain];
 	
 	// update the controller
+	[settingsViewController updateServerInfo];
 	[settingsViewController updateOptions];
 	[settingsViewController updateOutputs];
 }
@@ -319,6 +332,7 @@
 	// setup
 	NSLog(@"mpd idle: thread started");
 	[self updateAll];
+	[self updateServerInfo];
 	
 	while (![[NSThread currentThread] isCancelled])
 	{
@@ -410,25 +424,49 @@
 
 #pragma mark connection managing
 
-- (BOOL) connectToHost: (NSString*) host port: (unsigned int) port
+- (BOOL) connectToHost: (NSString*) _host port: (unsigned int) _port
+{
+	return [self connectToHost: _host port: _port password: nil];
+}
+
+- (BOOL) connectToHost: (NSString*) _host port: (unsigned int) _port password: (NSString*) _password;
 {
 	@synchronized(self)
 	{
 		if (mpd != NULL)
 			[self disconnect];
 		
-		mpd = mpd_connection_new([host cStringUsingEncoding: NSUTF8StringEncoding], port, MPD_TIMEOUT);
+		// set data NOW so failure still has last attempt data
+		if (host)
+			[host release];
+		if (password)
+			[password release];
 		
-		if (mpd_connection_get_error(mpd) != MPD_ERROR_SUCCESS)
+		host = [_host copy];
+		port = _port;
+		if (_password)
 		{
-			NSLog(@"mpd error: could not connect: %s", mpd_connection_get_error_message(mpd));
-			mpd_connection_free(mpd);
-			mpd = NULL;
+			password = [_password copy];
+		} else {
+			password = [[NSString alloc] init];
+		}
+		
+		// connect
+		mpd = mpd_connection_new([_host cStringUsingEncoding: NSUTF8StringEncoding], _port, MPD_TIMEOUT);
+		
+		if ([self handleError: @"could not connect"])
 			return NO;
+		
+		if (_password && [_password length] != 0)
+		{
+			// use a password
+			mpd_run_password(mpd, [_password cStringUsingEncoding: NSUTF8StringEncoding]);
+			if ([self handleError: @"password failed"])
+				return NO;
 		}
 		
 		const unsigned int* version = mpd_connection_get_server_version(mpd);
-		NSLog(@"mpd: connected to %@:%i, protocol version %i.%i.%i", host, port, version[0], version[1], version[2]);
+		NSLog(@"mpd: connected to %@:%i, protocol version %i.%i.%i", _host, _port, version[0], version[1], version[2]);
 	}
 	
 	idleThread = [[NSThread alloc] initWithTarget: self selector: @selector(idleThreadSelector:) object: nil];
@@ -447,7 +485,7 @@
 	}
 	[self postLock];
 	
-	if ([NSThread currentThread] != idleThread)
+	if ([NSThread currentThread] != idleThread && idleThread != nil)
 	{
 		[idleThread cancel];
 		while (![idleThread isFinished]) [NSThread sleepForTimeInterval: 0.1];
@@ -456,12 +494,30 @@
 	@synchronized(self)
 	{
 		mpd_connection_free(mpd);
-		[idleThread release];
 		mpd = NULL;
-		idleThread = nil;
+		
+		if (idleThread)
+		{
+			[idleThread release];
+			idleThread = nil;
+		}
+		
+		// do NOT update server info -- let the UI use the old info as long as it can
+		// blanks are NOT helpful
+		
+		//if (host)
+		//	[host release];
+		//host = nil;
+		//if (password)
+		//	[password release];
+		//password = nil;
+		//port = 0;
+		
 		NSLog(@"mpd: disconnected");
+		
 	}
 	
+	[self updateServerInfo];
 	[self updateAll];
 }
 
@@ -476,7 +532,19 @@
 	{
 		if (mpd_connection_get_error(mpd) != MPD_ERROR_SUCCESS)
 		{
-			NSLog(@"mpd error: %@: %s", part, mpd_connection_get_error_message(mpd));
+			NSString* errorstr = [[NSString alloc] initWithFormat: @"%@: %s", part, mpd_connection_get_error_message(mpd)];
+			
+			// log the error
+			NSLog(@"mpd error: %@", errorstr);
+			
+			// display a message
+			UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"MPD Error" message: errorstr delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
+			[alert show];
+			[alert release];
+			
+			[errorstr release];
+			
+			// disconnect if fatal
 			if (mpd_connection_clear_error(mpd) == NO)
 				[self disconnect];
 			return YES;

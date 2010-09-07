@@ -20,13 +20,27 @@
 	[window addSubview: splitview.view];
     [window makeKeyAndVisible];
 	
-	[mpclient connectToHost: @"hesperus" port: 0];
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	NSString* host = [defaults stringForKey: @"host"];
+	unsigned int port = [defaults integerForKey: @"port"];
+	NSString* password = [defaults stringForKey: @"password"];
+	
+	if (host)
+	{
+		[mpclient connectToHost: host port: port password: password];
+	}
     
     return YES;
 }
 
 - (void) applicationWillTerminate: (UIApplication*) application
 {
+	// save the state
+	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setObject: mpclient.host forKey: @"host"];
+	[defaults setInteger: mpclient.port forKey: @"port"];
+	[defaults setObject: mpclient.password forKey: @"password"];
+	
 	[mpclient disconnect];
 	[splitview release];
     [window release];

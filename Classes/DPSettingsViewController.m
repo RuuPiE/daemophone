@@ -21,9 +21,39 @@
     return self;
 }
 
+- (UITextField*) createTextField;
+{
+	/* create a reasonable text-entry field for use in a table cell */
+	UITextField* field = [[UITextField alloc] initWithFrame: CGRectMake(20.0, 15.0, 300.0, 30.0)];
+	
+	/* nice defaults */
+	[field setTextAlignment: UITextAlignmentRight];
+	//[field setClearButtonMode: UITextFieldViewModeWhileEditing];
+	[field setAutocapitalizationType: UITextAutocapitalizationTypeNone];
+	[field setAutocorrectionType: UITextAutocorrectionTypeNo];
+	[field setReturnKeyType: UIReturnKeyDone];
+	
+	[field setDelegate: self];
+	
+	return field;
+}
+
 - (void) viewDidLoad
 {
     [super viewDidLoad];
+	
+	addressField = [self createTextField];
+	[addressField setPlaceholder: @"localhost"];
+	[addressField setKeyboardType: UIKeyboardTypeURL];
+	
+	portField = [self createTextField];
+	[portField setPlaceholder: @"6600"]; // default mpd port
+	[portField setKeyboardType: UIKeyboardTypeNumberPad];
+	
+	passwordField = [self createTextField];
+	[passwordField setPlaceholder: @"(no password)"];
+	[passwordField setSecureTextEntry: YES];
+	
 	[mpclient setSettingsViewController: self];
 }
 
@@ -33,6 +63,10 @@
 	[mpclient setSettingsViewController: nil];
     
 	self.settingsTableView = nil;
+	
+	[addressField release];
+	[portField release];
+	[passwordField release];
 }
 
 - (BOOL) shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation) interfaceOrientation
@@ -56,18 +90,44 @@
 
 #pragma mark update after new server info
 
+- (void) updateServerInfo
+{
+	/* reset all our data */
+	NSString* portstr;
+	if (mpclient.port == 0)
+	{
+		portstr = [[NSString alloc] init];
+	} else {
+		portstr = [[NSString alloc] initWithFormat: @"%i", mpclient.port];
+	}
+	
+	[portField setText: portstr];
+	[portstr release];
+	
+	[addressField setText: [mpclient host]];
+	[passwordField setText: [mpclient password]];
+	
+	// we may have changed connection state -- handle section fades
+	
+	NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndexesInRange: NSMakeRange(1, ESS_COUNT - 1)];
+	if ([mpclient isConnected] && [settingsTableView numberOfSections] == 1)
+	{
+		[settingsTableView insertSections: indexSet withRowAnimation: UITableViewRowAnimationFade];
+	} else if (![mpclient isConnected] && [settingsTableView numberOfSections] == ESS_COUNT) {
+		[settingsTableView deleteSections: indexSet withRowAnimation: UITableViewRowAnimationFade];
+	}
+	[indexSet release];
+}
+
 - (void) updateOptions
 {
-	// just reload the table
-	
-	//NSRange range;
-	//range.location = 0;
-	//range.length = 1;
-	//NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndexesInRange: range];
-	//[settingsTableView reloadSections: indexSet withRowAnimation: UITableViewRowAnimationFade];
-	//[indexSet release];
-	
-	[settingsTableView reloadData];
+	// just reload the options section, animations are a bit overkill here
+	if ([settingsTableView numberOfSections] > ESS_PLAYMODES)
+	{
+		NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndex: ESS_PLAYMODES];
+		[settingsTableView reloadSections: indexSet withRowAnimation: UITableViewRowAnimationNone];
+		[indexSet release];
+	}
 }
 
 - (void) updateOutputs
@@ -92,7 +152,13 @@
 		[outputSwitches release];
 	outputSwitches = switches;
 	
-	[settingsTableView reloadData];
+	// just reload the options section, animations are a bit overkill here
+	if ([settingsTableView numberOfSections] > ESS_OUTPUTS)
+	{
+		NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndex: ESS_OUTPUTS];
+		[settingsTableView reloadSections: indexSet withRowAnimation: UITableViewRowAnimationNone];
+		[indexSet release];
+	}
 }
 
 #pragma mark callbacks for settings controls
@@ -127,23 +193,46 @@
 	[mpclient setOutput: output_id on: toggle.on];
 }
 
+#pragma mark text field delegate
+
+// for all of these, we assume text fields are only for server info
+
+- (BOOL) textFieldShouldReturn: (UITextField*) textField
+{
+	[textField resignFirstResponder];
+	return YES;
+}
+
+- (void) textFieldDidEndEditing: (UITextField*) textField
+{
+	// reconnect with new info
+	unsigned int port = [portField.text integerValue];
+	NSLog(@"using port %i", port);
+	[mpclient disconnect];
+	[mpclient connectToHost: addressField.text port: port password: passwordField.text];
+}
+
 #pragma mark Table View Data Source
 
 - (NSInteger) numberOfSectionsInTableView: (UITableView*) tableView;
 {
-	return ESS_COUNT;
+	if ([mpclient isConnected])
+		return ESS_COUNT;
+	return 1;
 }
 
 - (NSInteger) tableView: (UITableView*) tableView numberOfRowsInSection: (NSInteger) section
 {
 	switch (section)
 	{
+		case ESS_SERVERINFO:
+			return ESI_COUNT;
 		case ESS_PLAYMODES:
 			return EPM_COUNT;
 		case ESS_OUTPUTS:
-			if ([mpclient outputs] == nil)
+			if (outputSwitches == nil)
 				return 0;
-			return [[mpclient outputs] count];
+			return [outputSwitches count];
 	};
 	return 0;
 }
@@ -152,6 +241,8 @@
 {
 	switch (section)
 	{
+		case ESS_SERVERINFO:
+			return @"Server";
 		case ESS_PLAYMODES:
 			return @"Play Modes";
 		case ESS_OUTPUTS:
@@ -163,6 +254,28 @@
 - (UITableViewCell*) tableView: (UITableView*) tableView cellForRowAtIndexPath: (NSIndexPath*) indexPath;
 {
 	UITableViewCell* cell = [self cellForTable: tableView withText: @"settings"];
+	
+	if ([indexPath section] == ESS_SERVERINFO)
+	{
+		switch ([indexPath row])
+		{
+			case ESI_ADDRESS:
+				[cell.textLabel setText: @"Address"];
+				[cell setAccessoryView: addressField];
+				break;
+			case ESI_PORT:
+				[cell.textLabel setText: @"Port"];
+				[cell setAccessoryView: portField];
+				break;
+			case ESI_PASSWORD:
+				[cell.textLabel setText: @"Password"];
+				[cell setAccessoryView: passwordField];
+				break;
+		};
+		return cell;
+	}
+	
+	// these next ones use toggles as an accessory view
 	UISwitch* toggle = [[UISwitch alloc] initWithFrame: CGRectZero];
 	[cell setAccessoryView: toggle];
 	[toggle release];

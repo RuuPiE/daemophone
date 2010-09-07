@@ -26,6 +26,10 @@
 	DPPlaylistViewController* playlistViewController;
 	DPSettingsViewController* settingsViewController;
 	
+	NSString* host;
+	unsigned int port;
+	NSString* password;
+	
 	NSDictionary* currentSongInfo;
 	NSDictionary* nextSongInfo;
 	int currentSongPlaylistPosition;
@@ -53,6 +57,10 @@
 @property (nonatomic, retain) DPPlaylistViewController* playlistViewController;
 @property (nonatomic, retain) DPSettingsViewController* settingsViewController;
 
+@property (nonatomic, readonly) NSString* host;
+@property (nonatomic, readonly) unsigned int port;
+@property (nonatomic, readonly) NSString* password;
+
 @property (nonatomic, readonly) NSDictionary* currentSongInfo;
 @property (nonatomic, readonly) NSDictionary* nextSongInfo;
 @property (nonatomic, readonly) int currentSongPlaylistPosition;
@@ -77,7 +85,8 @@
 - (void) updateAll;
 
 // port == 0 gets passed straight to libmpdclient, so it means "default port" (6600)
-- (BOOL) connectToHost: (NSString*) host port: (unsigned int) port;
+- (BOOL) connectToHost: (NSString*) _host port: (unsigned int) _port password: (NSString*) _password;
+- (BOOL) connectToHost: (NSString*) _host port: (unsigned int) _port;
 - (void) disconnect;
 - (BOOL) isConnected;
 

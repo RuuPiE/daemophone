@@ -10,9 +10,18 @@
 
 enum ESettingsSections
 {
+	ESS_SERVERINFO,
 	ESS_PLAYMODES,
 	ESS_OUTPUTS,
 	ESS_COUNT
+};
+
+enum EServerInfo
+{
+	ESI_ADDRESS,
+	ESI_PORT,
+	ESI_PASSWORD,
+	ESI_COUNT
 };
 
 enum EPlayModes
@@ -25,14 +34,19 @@ enum EPlayModes
 	EPM_COUNT
 };
 
-@interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
+@interface DPSettingsViewController : DPTableViewController <UITableViewDelegate, UITableViewDataSource, UIPopoverControllerDelegate, UIPickerViewDelegate, UIPickerViewDataSource, UITextFieldDelegate>
 {
 	UITableView* settingsTableView;
 	NSArray* outputSwitches;
+	
+	UITextField* addressField;
+	UITextField* portField;
+	UITextField* passwordField;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView* settingsTableView;
 
+- (void) updateServerInfo;
 - (void) updateOptions;
 - (void) updateOutputs;
 - (IBAction) dismissSettings: (id) button;
