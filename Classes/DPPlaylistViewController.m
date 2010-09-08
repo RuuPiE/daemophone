@@ -317,13 +317,6 @@
 	[toolbar setItems: items animated: NO];
 	[items release];
 	
-	// we set the size manually so we're sure we can hit the toggle button again
-	// 700px /just/ fits inside the playlist table view
-	CGSize size;
-	size.width = 320;
-	size.height = 700;
-	[popover setPopoverContentSize: size];
-	
 	// show the popover so that people know it's MOVED from where it is normally
 	// we show it on the right instead of the usual left so that people can still
 	// read and interact meaningfully with the playlist

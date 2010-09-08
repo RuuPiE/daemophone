@@ -673,6 +673,17 @@
 	[self postLock];
 }
 
+- (void) addSong: (NSString*) uri
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_add(mpd, [uri cStringUsingEncoding: NSUTF8StringEncoding]);
+		[self handleError: @"could not add song to queue"];
+	}
+	[self postLock];
+}
+
 #pragma mark player option setting
 
 - (void) setRepeat: (BOOL) mode
@@ -728,6 +739,104 @@
 		[self handleError: @"could not modify crossfade length"];
 	}
 	[self postLock];
+}
+
+#pragma mark database getters
+
+- (NSArray*) getFiles: (NSString*) path
+{
+	NSMutableArray* ret = nil;
+	
+	[self preLock];
+	@synchronized(self)
+	{
+		if (mpd == NULL)
+		{
+			[self postLock];
+			return nil;
+		}
+		
+		mpd_send_list_meta(mpd, [path cStringUsingEncoding: NSUTF8StringEncoding]);
+		if ([self handleError: @"could not query database"])
+		{
+			[self postLock];
+			return nil;
+		}
+		
+		struct mpd_entity* entity;
+		ret = [[NSMutableArray alloc] init];
+		
+		while ((entity = mpd_recv_entity(mpd)) != NULL)
+		{
+			const struct mpd_song* song;
+			const struct mpd_directory* dir;
+			const struct mpd_playlist* pl;
+			
+			NSString* path;
+			
+			NSMutableDictionary* retadd = [[NSMutableDictionary alloc] init];
+			
+			switch (mpd_entity_get_type(entity))
+			{
+				case MPD_ENTITY_TYPE_SONG:
+					song = mpd_entity_get_song(entity);
+					[retadd setObject: @"song" forKey: @"type"];
+					
+					path = [[NSString alloc] initWithUTF8String: mpd_song_get_uri(song)];
+					[retadd setObject: path forKey: @"path"];
+					[path release];
+					
+					break;
+				case MPD_ENTITY_TYPE_DIRECTORY:
+					dir = mpd_entity_get_directory(entity);
+					[retadd setObject: @"directory" forKey: @"type"];
+					
+					path = [[NSString alloc] initWithUTF8String: mpd_directory_get_path(dir)];
+					[retadd setObject: path forKey: @"path"];
+					[path release];
+					
+					break;
+				case MPD_ENTITY_TYPE_PLAYLIST:
+					pl = mpd_entity_get_playlist(entity);
+					[retadd setObject: @"playlist" forKey: @"type"];
+					
+					path = [[NSString alloc] initWithUTF8String: mpd_playlist_get_path(pl)];
+					[retadd setObject: path forKey: @"path"];
+					[path release];
+					
+					break;
+				case MPD_ENTITY_TYPE_UNKNOWN:
+				default:
+					/* default -- do nothing! */
+					break;
+			};
+			
+			if ([[retadd allKeys] containsObject: @"path"])
+			{
+				// add the last path component too
+				
+				// this is autoreleased (ughh)
+				NSString* lastpath = [(NSString*)[retadd objectForKey: @"path"] lastPathComponent];
+				[retadd setObject: lastpath forKey: @"lastpath"];
+			}
+			
+			[ret addObject: retadd];
+			[retadd release];
+			
+			mpd_entity_free(entity);
+		}
+		
+		mpd_response_finish(mpd);
+		if ([self handleError: @"could not query database"])
+		{
+			[self postLock];
+			[ret release];
+			return nil;
+		}
+	}
+	[self postLock];
+	
+	return ret;
 }
 
 #pragma mark Output Control

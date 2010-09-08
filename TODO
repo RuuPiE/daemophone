@@ -18,7 +18,6 @@ clear up lingering bugs from server configuration
  - hang on connect
  - don't pop up an error when we can't connect on start
 
-add by filename browser
 add by metadata
 add URI
 append/replace toggle (or not, have them just clear playlist)

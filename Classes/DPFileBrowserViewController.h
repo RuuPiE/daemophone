@@ -6,10 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "DPTableViewController.h"
 
-@interface DPFileBrowserViewController : UIViewController
+@interface DPFileBrowserViewController : DPTableViewController
 {
-
+	UITableView* browseTableView;
+	NSArray* browseData;
+	NSString* path;
 }
+
+@property (nonatomic, retain) IBOutlet UITableView* browseTableView;
+@property (nonatomic, copy) NSString* path;
 
 @end
