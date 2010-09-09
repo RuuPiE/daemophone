@@ -107,6 +107,7 @@
 - (void) setCrossfade: (unsigned int) length;
 
 - (void) playPlaylistPosition: (unsigned int) pos;
+- (void) clearPlaylist;
 - (void) addSong: (NSString*) uri;
 
 - (NSArray*) getFiles: (NSString*) path;

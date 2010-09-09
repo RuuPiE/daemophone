@@ -717,6 +717,17 @@
 	[self postLock];
 }
 
+- (void) clearPlaylist
+{
+	[self preLock];
+	@synchronized(self)
+	{
+		mpd_run_clear(mpd);
+		[self handleError: @"could not clear queue"];
+	}
+	[self postLock];
+}
+
 - (void) addSong: (NSString*) uri
 {
 	[self preLock];

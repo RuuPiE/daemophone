@@ -410,6 +410,12 @@
 	if (![mpclient isConnected])
 		return;
 	// handle playlist control buttons
+	
+	if (button == plClearButton)
+	{
+		// clear!
+		[mpclient clearPlaylist];
+	}
 }
 
 @end
