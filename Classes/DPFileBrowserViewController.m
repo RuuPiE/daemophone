@@ -64,6 +64,7 @@
 		[toolbar_opts release];
 		
 		[segment setSegmentedControlStyle: UISegmentedControlStyleBar];
+		[segment setSelectedSegmentIndex: 0];
 		
 		UIBarButtonItem* barbutton = [[UIBarButtonItem alloc] initWithCustomView: segment];
 		[segment release];
