@@ -16,6 +16,7 @@ clear up lingering bugs from server configuration
  - updates stop after reconnect, sometimes
  - hang on connect
 
+add browser images (playlist/song/dir/...)
 add by metadata
 add URI
 append/replace toggle (or not, have them just clear playlist)

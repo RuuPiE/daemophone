@@ -34,15 +34,14 @@
 	if (browseData)
 		[browseData release];
 	
-	NSString* usepath = path;
-	if (usepath == nil)
-		usepath = @"/";
+	if (path == nil)
+		self.path = @"/";
 	
 	// nil means either not connected, or error, and errors are usually fatal
 	// so it's safe to assume browseData == nil => not connected
 	// (no content is represented by an empty array)
-	browseData = [mpclient getFiles: usepath];
-	NSLog(@"using path: %@", usepath);
+	browseData = [mpclient getFiles: self.path];
+	NSLog(@"using path: %@", self.path);
 }
 
 // additional setup after loading the view, typically from a nib.
@@ -144,7 +143,11 @@
 - (NSInteger) tableView: (UITableView*) tableView numberOfRowsInSection: (NSInteger) section
 {
 	if (browseData)
-		return [browseData count];
+	{
+		// plus 1, for "add all" option
+		return [browseData count] + 1;
+	}
+	
 	/* we're not connected -- show message */
 	return 1;
 }
@@ -162,7 +165,13 @@
 		return [self cellForTable: tableView withText: @"not connected"];
 	}
 	
-	NSDictionary* data = [browseData objectAtIndex: [indexPath row]];
+	if ([indexPath row] == 0)
+	{
+		/* this is our "add all" option */
+		return [self cellForTable: tableView withText: @"Add All"];
+	}
+	
+	NSDictionary* data = [browseData objectAtIndex: [indexPath row] - 1];
 	NSLog(@"celldata %@", data);
 	UITableViewCell* cell = [self cellForTable: tableView withText: [data objectForKey: @"lastpath"]];
 	if ([data objectForKey: @"type"] == @"directory")
@@ -186,7 +195,14 @@
 	
 	[browseTableView deselectRowAtIndexPath: indexPath animated: YES];
 	
-	NSDictionary* data = [browseData objectAtIndex: [indexPath row]];
+	if ([indexPath row] == 0)
+	{
+		/* add all option */
+		[mpclient addSong: self.path];
+		return;
+	}
+	
+	NSDictionary* data = [browseData objectAtIndex: [indexPath row] - 1];
 	NSString* type = [data objectForKey: @"type"];
 	
 	if (type == @"directory")
