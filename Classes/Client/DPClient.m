@@ -561,16 +561,36 @@
 			// log the error
 			NSLog(@"mpd error: %@", errorstr);
 			
-			// display a message
-			UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"MPD Error" message: errorstr delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
-			[alert show];
-			[alert release];
+			// whether to open settings menu (delayed, so we're disconnected when we show it)
+			BOOL open_settings = NO;
+			
+			// check for misconfiguration (first time, data reset, ...)
+			if (host == nil || [host length] == 0)
+			{
+				// display a helpful message
+				UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"Configure a Server" message: @"You must configure a server for daemophone to use." delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
+				[alert show];
+				[alert release];
+				
+				// open the configuration pane automatically
+				open_settings = YES;
+			} else {
+				// display a message
+				UIAlertView* alert = [[UIAlertView alloc] initWithTitle: @"MPD Error" message: errorstr delegate: nil cancelButtonTitle: @"OK" otherButtonTitles: nil];
+				[alert show];
+				[alert release];
+			}
 			
 			[errorstr release];
 			
 			// disconnect if fatal
 			if (mpd_connection_clear_error(mpd) == NO)
 				[self disconnect];
+			
+			// open settings pane if we need to (and can)
+			if (open_settings && playlistViewController != nil)
+				[playlistViewController showSettings: nil];
+			
 			return YES;
 		}
 	}

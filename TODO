@@ -16,7 +16,6 @@ non-hack way to let users know the popover is placed non-standard
 clear up lingering bugs from server configuration
  - updates stop after reconnect, sometimes
  - hang on connect
- - don't pop up an error when we can't connect on start
 
 add by metadata
 add URI
