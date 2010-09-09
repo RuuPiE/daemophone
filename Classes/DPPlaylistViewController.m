@@ -314,9 +314,10 @@
 {
 	self.popover = pc;
 	
-	NSArray* passthroughs = [[NSArray alloc] initWithObjects: self.view, nil];
-	[self.popover setPassthroughViews: passthroughs];
-	[passthroughs release];
+	// being able to use the playlist controls are nice, but see below -- this isn't what people expect
+	//NSArray* passthroughs = [[NSArray alloc] initWithObjects: self.view, nil];
+	//[self.popover setPassthroughViews: passthroughs];
+	//[passthroughs release];
 	
 	NSMutableArray* items = [[toolbar items] mutableCopy];
 	[items addObject: popoverButton];
