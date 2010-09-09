@@ -246,6 +246,11 @@
 	{
 		[settingsViewController performSelectorOnMainThread: @selector(updateServerInfo) withObject: nil waitUntilDone: NO];
 	}
+	
+	if (fileBrowserViewController != nil)
+	{
+		[fileBrowserViewController performSelectorOnMainThread: @selector(updateServerInfo) withObject: nil waitUntilDone: NO];
+	}
 }
 
 - (void) updateAll
@@ -301,12 +306,31 @@
 	[settingsViewController updateOutputs];
 }
 
+- (DPFileBrowserViewController*) fileBrowserViewController
+{
+	return fileBrowserViewController;
+}
+
+- (void) setFileBrowserViewController: (DPFileBrowserViewController*) fbvc
+{
+	if (fileBrowserViewController != nil)
+		[fileBrowserViewController release];
+	fileBrowserViewController = fbvc;
+	if (fileBrowserViewController == nil)
+		return;
+	[fileBrowserViewController retain];
+	
+	// update the controller
+	[fileBrowserViewController updateServerInfo];
+}
+
 - (void) dealloc
 {
 	[self disconnect];
 	
 	self.playlistViewController = nil;
 	self.settingsViewController = nil;
+	self.fileBrowserViewController = nil;
 	
 	if (currentSongInfo != nil)
 		[currentSongInfo release];

@@ -27,6 +27,24 @@
     [super dealloc];
 }
 
+// helper function to fetch data from the client, but not reload anything
+- (void) fetchData
+{
+	/* reload data in the table */
+	if (browseData)
+		[browseData release];
+	
+	NSString* usepath = path;
+	if (usepath == nil)
+		usepath = @"/";
+	
+	// nil means either not connected, or error, and errors are usually fatal
+	// so it's safe to assume browseData == nil => not connected
+	// (no content is represented by an empty array)
+	browseData = [mpclient getFiles: usepath];
+	NSLog(@"using path: %@", usepath);
+}
+
 // additional setup after loading the view, typically from a nib.
 - (void) viewDidLoad
 {
@@ -34,11 +52,44 @@
 	// 700px /just/ fits inside the playlist table view
 	self.contentSizeForViewInPopover = CGSizeMake(320, 630);
 	
+	// only set the mpclient callback if we're the root fbrowser
+	if ([self.navigationController.viewControllers objectAtIndex: 0] == self)
+	{
+		// set up the mpclient callback, which will then load our data
+		mpclient.fileBrowserViewController = self;
+		
+		// also, set up our toolbar since we're root
+		NSArray* toolbar_opts = [[NSArray alloc] initWithObjects: @"By File", @"By Artist", nil];
+		UISegmentedControl* segment = [[UISegmentedControl alloc] initWithItems: toolbar_opts];
+		[toolbar_opts release];
+		
+		[segment setSegmentedControlStyle: UISegmentedControlStyleBar];
+		
+		UIBarButtonItem* barbutton = [[UIBarButtonItem alloc] initWithCustomView: segment];
+		[segment release];
+		
+		UIBarButtonItem* flexyspace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace target: nil action: nil];
+		
+		NSArray* barArray = [[NSArray alloc] initWithObjects: flexyspace, barbutton, flexyspace, nil];
+		[barbutton release];
+		[flexyspace release];
+		
+		[self setToolbarItems: barArray animated: YES];
+		[barArray release];
+	} else {
+		/* we must fetch the data manually this one time */
+		[self fetchData];
+		[browseTableView reloadData];
+	}
+	
     [super viewDidLoad];
 }
 
 - (void) viewDidUnload
 {
+	if (mpclient.fileBrowserViewController == self)
+		mpclient.fileBrowserViewController = nil;
+	
 	self.browseTableView = nil;
 	self.path = nil;
 	
@@ -49,20 +100,6 @@
 	}
 	
     [super viewDidUnload];
-}
-
-- (void) viewWillAppear: (BOOL) animated
-{
-	if (browseData)
-		[browseData release];
-	
-	NSString* usepath = path;
-	if (usepath == nil)
-		usepath = @"/";
-	
-	browseData = [mpclient getFiles: usepath];
-	NSLog(@"using path: %@", usepath);
-	[browseTableView reloadData];
 }
 
 - (void) didReceiveMemoryWarning
@@ -79,6 +116,23 @@
     return YES;
 }
 
+#pragma mark Client Callbacks
+
+- (void) updateServerInfo
+{
+	[self fetchData];
+	
+	/* reload the data all pretty-like */
+	NSIndexSet* indexSet = [[NSIndexSet alloc] initWithIndex: 0];
+	[browseTableView reloadSections: indexSet withRowAnimation: UITableViewRowAnimationFade];
+	[indexSet release];
+	
+	/* reset the navigation view stack to the toplevel, we've just changed connection states! */
+	NSArray* controllers = [[NSArray alloc] initWithObjects: self, nil];
+	[self.navigationController setViewControllers: controllers animated: YES];
+	[controllers release];
+}
+
 #pragma mark Table View Data Source
 
 - (NSInteger) numberOfSectionsInTableView: (UITableView*) tableView;
@@ -90,6 +144,7 @@
 {
 	if (browseData)
 		return [browseData count];
+	/* we're not connected -- show message (?) */
 	return 0;
 }
 
@@ -100,8 +155,11 @@
 
 - (UITableViewCell*) tableView: (UITableView*) tableView cellForRowAtIndexPath: (NSIndexPath*) indexPath;
 {
-	if (browseData == nil)
-		return nil;
+	//if (browseData == nil)
+	//{
+	//	// FIXME nicer, greyer message cell
+	//	return [self cellForTable: tableView withText: @"not connected"];
+	//}
 	
 	NSDictionary* data = [browseData objectAtIndex: [indexPath row]];
 	NSLog(@"celldata %@", data);

@@ -20,11 +20,13 @@
 
 @class DPPlaylistViewController;
 @class DPSettingsViewController;
+@class DPFileBrowserViewController;
 
 @interface DPClient : NSObject
 {
 	DPPlaylistViewController* playlistViewController;
 	DPSettingsViewController* settingsViewController;
+	DPFileBrowserViewController* fileBrowserViewController;
 	
 	NSString* host;
 	unsigned int port;
@@ -56,6 +58,8 @@
 
 @property (nonatomic, retain) DPPlaylistViewController* playlistViewController;
 @property (nonatomic, retain) DPSettingsViewController* settingsViewController;
+// only set this on the ROOT level view controller
+@property (nonatomic, retain) DPFileBrowserViewController* fileBrowserViewController;
 
 @property (nonatomic, readonly) NSString* host;
 @property (nonatomic, readonly) unsigned int port;

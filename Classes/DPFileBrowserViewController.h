@@ -18,4 +18,6 @@
 @property (nonatomic, retain) IBOutlet UITableView* browseTableView;
 @property (nonatomic, copy) NSString* path;
 
+- (void) updateServerInfo;
+
 @end
