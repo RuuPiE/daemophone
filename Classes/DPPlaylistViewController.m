@@ -20,6 +20,7 @@
 @synthesize popover, toolbar, popoverButton;
 @synthesize currentTitle, currentAlbum, currentArtist, nextSongLabel, nextSong;
 @synthesize playButton, stopButton, nextButton, prevButton;
+@synthesize plClearButton;
 @synthesize elapsedTimeLabel, remainingTimeLabel, seekBar;
 @synthesize playlistTableView;
 
@@ -94,6 +95,8 @@
 	self.stopButton = nil;
 	self.nextButton = nil;
 	self.prevButton = nil;
+	
+	self.plClearButton = nil;
 	
 	self.elapsedTimeLabel = nil;
 	self.remainingTimeLabel = nil;
@@ -218,6 +221,10 @@
 	[stopButton setEnabled: controlsEnabled];
 	[nextButton setEnabled: controlsEnabled];
 	[prevButton setEnabled: controlsEnabled];
+	
+	[plClearButton setEnabled: controlsEnabled];
+	
+	[popoverButton setEnabled: controlsEnabled];
 	
 	UIImage* playButtonImage = nil;
 	if ([mpclient isPlaying])
@@ -398,5 +405,11 @@
 	}
 }
 
+- (IBAction) playlistAction: (id) button
+{
+	if (![mpclient isConnected])
+		return;
+	// handle playlist control buttons
+}
 
 @end

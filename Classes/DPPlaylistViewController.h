@@ -26,6 +26,8 @@
 	UIButton* nextButton;
 	UIButton* prevButton;
 	
+	UIBarButtonItem* plClearButton;
+	
 	NSTimer* positionTimer;
 	NSDate* songPositionTimestamp;
 	BOOL isPaused, isPlaying;
@@ -53,6 +55,8 @@
 @property (nonatomic, retain) IBOutlet UIButton* nextButton;
 @property (nonatomic, retain) IBOutlet UIButton* prevButton;
 
+@property (nonatomic, retain) IBOutlet UIBarButtonItem* plClearButton;
+
 @property (nonatomic, retain) IBOutlet UILabel* elapsedTimeLabel;
 @property (nonatomic, retain) IBOutlet UILabel* remainingTimeLabel;
 @property (nonatomic, retain) IBOutlet UIProgressView* seekBar;
@@ -63,6 +67,7 @@
 - (IBAction) togglePopover: (id) button;
 
 - (IBAction) playerControlAction: (id) button;
+- (IBAction) playlistAction: (id) button;
 
 - (void) updateCurrentSong;
 - (void) updateCurrentSongPosition;

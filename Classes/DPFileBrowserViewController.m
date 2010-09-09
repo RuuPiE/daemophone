@@ -144,8 +144,8 @@
 {
 	if (browseData)
 		return [browseData count];
-	/* we're not connected -- show message (?) */
-	return 0;
+	/* we're not connected -- show message */
+	return 1;
 }
 
 - (NSString*) tableView: (UITableView*) tableView titleForHeaderInSection: (NSInteger) section
@@ -155,11 +155,11 @@
 
 - (UITableViewCell*) tableView: (UITableView*) tableView cellForRowAtIndexPath: (NSIndexPath*) indexPath;
 {
-	//if (browseData == nil)
-	//{
-	//	// FIXME nicer, greyer message cell
-	//	return [self cellForTable: tableView withText: @"not connected"];
-	//}
+	if (browseData == nil)
+	{
+		// FIXME nicer, greyer message cell
+		return [self cellForTable: tableView withText: @"not connected"];
+	}
 	
 	NSDictionary* data = [browseData objectAtIndex: [indexPath row]];
 	NSLog(@"celldata %@", data);
