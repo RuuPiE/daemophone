@@ -11,6 +11,10 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		D00DABE112E4DC09006212CC /* NSObject+Swizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = D00DABDA12E4DC09006212CC /* NSObject+Swizzle.m */; };
+		D00DABE212E4DC09006212CC /* UIApplication+NiceNetworkIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = D00DABDC12E4DC09006212CC /* UIApplication+NiceNetworkIndicator.m */; };
+		D00DABE312E4DC09006212CC /* UIImage+ScaleCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = D00DABDE12E4DC09006212CC /* UIImage+ScaleCompat.m */; };
+		D00DABE412E4DC09006212CC /* UIViewController+ViewDidLoadPairing.m in Sources */ = {isa = PBXBuildFile; fileRef = D00DABE012E4DC09006212CC /* UIViewController+ViewDidLoadPairing.m */; };
 		D021232611DCAF5700906F22 /* DPSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D021232511DCAF5700906F22 /* DPSettingsViewController.m */; };
 		D021232811DCAF6400906F22 /* DPSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D021232711DCAF6400906F22 /* DPSettingsViewController.xib */; };
 		D0545AE511DF6F3300228DDA /* DPPlaylistCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0545AE411DF6F3300228DDA /* DPPlaylistCell.xib */; };
@@ -85,6 +89,14 @@
 		1D6058910D05DD3D006BFB54 /* daemophone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = daemophone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		D00DABD912E4DC08006212CC /* NSObject+Swizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Swizzle.h"; sourceTree = "<group>"; };
+		D00DABDA12E4DC09006212CC /* NSObject+Swizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Swizzle.m"; sourceTree = "<group>"; };
+		D00DABDB12E4DC09006212CC /* UIApplication+NiceNetworkIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIApplication+NiceNetworkIndicator.h"; sourceTree = "<group>"; };
+		D00DABDC12E4DC09006212CC /* UIApplication+NiceNetworkIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIApplication+NiceNetworkIndicator.m"; sourceTree = "<group>"; };
+		D00DABDD12E4DC09006212CC /* UIImage+ScaleCompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ScaleCompat.h"; sourceTree = "<group>"; };
+		D00DABDE12E4DC09006212CC /* UIImage+ScaleCompat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ScaleCompat.m"; sourceTree = "<group>"; };
+		D00DABDF12E4DC09006212CC /* UIViewController+ViewDidLoadPairing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ViewDidLoadPairing.h"; sourceTree = "<group>"; };
+		D00DABE012E4DC09006212CC /* UIViewController+ViewDidLoadPairing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ViewDidLoadPairing.m"; sourceTree = "<group>"; };
 		D021232411DCAF5700906F22 /* DPSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DPSettingsViewController.h; sourceTree = "<group>"; };
 		D021232511DCAF5700906F22 /* DPSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DPSettingsViewController.m; sourceTree = "<group>"; };
 		D021232711DCAF6400906F22 /* DPSettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = DPSettingsViewController.xib; path = Resources/DPSettingsViewController.xib; sourceTree = "<group>"; };
@@ -545,6 +557,14 @@
 		D0A3382811E1100100D6D1D6 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				D00DABD912E4DC08006212CC /* NSObject+Swizzle.h */,
+				D00DABDA12E4DC09006212CC /* NSObject+Swizzle.m */,
+				D00DABDB12E4DC09006212CC /* UIApplication+NiceNetworkIndicator.h */,
+				D00DABDC12E4DC09006212CC /* UIApplication+NiceNetworkIndicator.m */,
+				D00DABDD12E4DC09006212CC /* UIImage+ScaleCompat.h */,
+				D00DABDE12E4DC09006212CC /* UIImage+ScaleCompat.m */,
+				D00DABDF12E4DC09006212CC /* UIViewController+ViewDidLoadPairing.h */,
+				D00DABE012E4DC09006212CC /* UIViewController+ViewDidLoadPairing.m */,
 				D0A3382911E1100100D6D1D6 /* UILabel+SetTextAnimated.h */,
 				D0A3382A11E1100100D6D1D6 /* UILabel+SetTextAnimated.m */,
 			);
@@ -676,6 +696,10 @@
 				D08B6CC711E0DFB500F8EB76 /* sync.c in Sources */,
 				D08B6CC811E0DFB500F8EB76 /* tag.c in Sources */,
 				D0A3382B11E1100100D6D1D6 /* UILabel+SetTextAnimated.m in Sources */,
+				D00DABE112E4DC09006212CC /* NSObject+Swizzle.m in Sources */,
+				D00DABE212E4DC09006212CC /* UIApplication+NiceNetworkIndicator.m in Sources */,
+				D00DABE312E4DC09006212CC /* UIImage+ScaleCompat.m in Sources */,
+				D00DABE412E4DC09006212CC /* UIViewController+ViewDidLoadPairing.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
