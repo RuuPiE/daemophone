@@ -1,5 +1,5 @@
 // daemophone - an MPD client for iPad
-// Copyright (C) 2010 Aaron Griffith
+// Copyright (C) 2010, 2011 Aaron Griffith
 //
 // This file is licensed under the GNU GPL v2. See
 // the file "main.m" for details.
@@ -172,7 +172,7 @@
 	}
 	
 	NSDictionary* data = [browseData objectAtIndex: [indexPath row] - 1];
-	NSLog(@"celldata %@", data);
+	//NSLog(@"celldata %@", data);
 	UITableViewCell* cell = [self cellForTable: tableView withText: [data objectForKey: @"lastpath"]];
 	if ([data objectForKey: @"type"] == @"directory")
 		[cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator];
