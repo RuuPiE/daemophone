@@ -1,5 +1,5 @@
 // daemophone - an MPD client for iPad
-// Copyright (C) 2010 Aaron Griffith
+// Copyright (C) 2010, 2011 Aaron Griffith
 //
 // This file is licensed under the GNU GPL v2. See
 // the file "main.m" for details.
@@ -53,20 +53,39 @@
 	passwordField = [self createTextField];
 	[passwordField setPlaceholder: @"(no password)"];
 	[passwordField setSecureTextEntry: YES];
-	
-	[mpclient setSettingsViewController: self];
 }
 
 - (void) viewDidUnload
 {
     [super viewDidUnload];
-	[mpclient setSettingsViewController: nil];
     
 	self.settingsTableView = nil;
 	
-	[addressField release];
-	[portField release];
-	[passwordField release];
+	if (addressField == nil)
+	{
+		[addressField release];
+		addressField = nil;
+	}
+	if (portField == nil)
+	{
+		[portField release];
+		portField = nil;
+	}
+	if (passwordField == nil)
+	{
+		[passwordField release];
+		passwordField = nil;
+	}
+}
+
+- (void) viewWillAppear: (BOOL) animated
+{
+	[mpclient setSettingsViewController: self];
+}
+
+- (void) viewDidDisappear: (BOOL) animated
+{
+	[mpclient setSettingsViewController: nil];
 }
 
 - (BOOL) shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation) interfaceOrientation
@@ -75,16 +94,24 @@
     return YES;
 }
 
-- (void) didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
 - (void) dealloc
 {
+	if (addressField == nil)
+	{
+		[addressField release];
+		addressField = nil;
+	}
+	if (portField == nil)
+	{
+		[portField release];
+		portField = nil;
+	}
+	if (passwordField == nil)
+	{
+		[passwordField release];
+		passwordField = nil;
+	}
+	
     [super dealloc];
 }
 
