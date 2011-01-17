@@ -346,6 +346,8 @@
 					[labelText release];
 				}
 				[label setTextAlignment: UITextAlignmentRight];
+				label.opaque = NO;
+				label.backgroundColor = [UIColor clearColor];
 				[cell setAccessoryView: label];
 				break;
 		}
