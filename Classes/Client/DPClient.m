@@ -1,5 +1,5 @@
 // daemophone - an MPD client for iPad
-// Copyright (C) 2010 Aaron Griffith
+// Copyright (C) 2010, 2011 Aaron Griffith
 //
 // This file is licensed under the GNU GPL v2. See
 // the file "main.m" for details.
@@ -432,8 +432,10 @@
 		if (events & MPD_IDLE_OUTPUT)
 			[self updateOutputs];
 		
+		//NSLog(@"needInterrupt delay begin %i", needInterruptNumber);
 		while ([self needInterrupt])
 			[NSThread sleepForTimeInterval: MPD_IDLE_INTERVALS / 1000.0];
+		//NSLog(@"needInterrupt delay end");
 		
 		// pool maintainance
 		[pool release];
@@ -505,7 +507,10 @@
 	@synchronized(self)
 	{
 		if (mpd == NULL)
+		{
+			[self postLock];
 			return;
+		}
 	}
 	[self postLock];
 	
