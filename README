@@ -5,7 +5,7 @@ it uses the generously licensed libmpdclient, from
 (http://musicpd.org/), with a few minor changes / improvements get
 information about the next song and to do zero-blocking idle calls.
 
-It currently also uses a gear icon from Glyphish
-(http://glyphish.com/), under a Creative Commons license, and the
-default album art from Theremin (https://theremin.sigterm.eu/), a
-GPL'd Mac OS X MPD client.
+It currently also uses a gear icon from The Working Group,
+(http://blog.twg.ca/2010/11/retina-display-icon-set/), under a
+Creative Commons license, and the default album art from Theremin
+(https://theremin.sigterm.eu/), a GPL'd Mac OS X MPD client.
