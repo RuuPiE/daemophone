@@ -1,6 +1,6 @@
 //
 // daemophone - an MPD client for iPad
-// Copyright (C) 2010 Aaron Griffith
+// Copyright (C) 2010, 2011 Aaron Griffith
 //
 // This file is licensed under the GNU GPL v2. See
 // the file "main.m" for details.
@@ -34,13 +34,7 @@
 }
 
 - (void) applicationWillTerminate: (UIApplication*) application
-{
-	// save the state
-	NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-	[defaults setObject: mpclient.host forKey: @"host"];
-	[defaults setInteger: mpclient.port forKey: @"port"];
-	[defaults setObject: mpclient.password forKey: @"password"];
-	
+{	
 	[mpclient disconnect];
 	[splitview release];
     [window release];

@@ -493,6 +493,13 @@
 		
 		const unsigned int* version = mpd_connection_get_server_version(mpd);
 		NSLog(@"mpd: connected to %@:%i, protocol version %i.%i.%i", _host, _port, version[0], version[1], version[2]);
+		
+		// set user defaults here, on successfull connect
+		NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+		[defaults setObject: host forKey: @"host"];
+		[defaults setInteger: port forKey: @"port"];
+		[defaults setObject: password forKey: @"password"];
+		[defaults synchronize];
 	}
 	
 	idleThread = [[NSThread alloc] initWithTarget: self selector: @selector(idleThreadSelector:) object: nil];
