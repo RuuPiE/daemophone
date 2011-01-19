@@ -1,5 +1,5 @@
 // daemophone - an MPD client for iPad
-// Copyright (C) 2010 Aaron Griffith
+// Copyright (C) 2010, 2011 Aaron Griffith
 //
 // This file is licensed under the GNU GPL v2. See
 // the file "main.m" for details.
@@ -30,16 +30,27 @@
 	return cell;
 }
 
-
-- (UITableViewCell*) cellForTable: (UITableView*) tableView withText: (NSString*) text
+- (UITableViewCell*) cellForTable: (UITableView*) tableView withText: (NSString*) text andImageNamed: (NSString*) imageName
 {
 	UITableViewCell* cell = [self cellForTable: tableView withIdentifier: @"UITableViewCell"];
 	[cell setAccessoryView: nil];
 	[cell setAccessoryType: UITableViewCellAccessoryNone];
 	[cell.textLabel setText: text];
+	
+	if (imageName)
+	{
+		cell.imageView.image = [UIImage imageNamed: imageName];
+	} else {
+		cell.imageView.image = nil;
+	}
+	
 	return cell;
 }
 
+- (UITableViewCell*) cellForTable: (UITableView*) tableView withText: (NSString*) text
+{
+	return [self cellForTable: tableView withText: text andImageNamed: nil];
+}
 
 - (UITableViewCell*) playlistCellForTable: (UITableView*) tableView withData: (NSDictionary*) data isActive: (BOOL) playing
 {

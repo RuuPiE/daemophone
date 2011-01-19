@@ -168,14 +168,23 @@
 	if ([indexPath row] == 0)
 	{
 		/* this is our "add all" option */
-		return [self cellForTable: tableView withText: @"Add All"];
+		return [self cellForTable: tableView withText: @"Add All" andImageNamed: @"add"];
 	}
 	
 	NSDictionary* data = [browseData objectAtIndex: [indexPath row] - 1];
 	//NSLog(@"celldata %@", data);
 	UITableViewCell* cell = [self cellForTable: tableView withText: [data objectForKey: @"lastpath"]];
-	if ([data objectForKey: @"type"] == @"directory")
+	
+	if ([data objectForKey: @"type"] == @"song")
+	{
+		cell.imageView.image = [UIImage imageNamed: @"song"];
+	} else if ([data objectForKey: @"type"] == @"directory") {
+		cell.imageView.image = [UIImage imageNamed: @"folder"];
 		[cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator];
+	} else if ([data objectForKey: @"type"] == @"playlist") {
+		cell.imageView.image = [UIImage imageNamed: @"playlist"];
+	}
+	
 	return cell;
 }
 
