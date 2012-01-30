@@ -2,4 +2,6 @@
 .DS_Store
 *.mode?v3
 *.pbxuser
+xcuserdata
+project.xcworkspace
 build/
